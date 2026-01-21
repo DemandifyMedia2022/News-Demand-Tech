@@ -1,6 +1,5 @@
 "use client";
 
-import Navbar from "@/components/ui/navbar";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowUpRight, BadgeCheck, Sparkles } from "lucide-react";
@@ -187,8 +186,6 @@ export default function Home() {
 
   return (
     <div ref={rootRef} className="min-h-screen font-sans text-slate-900">
-      <Navbar />
-
       <main className="mx-auto w-full max-w-7xl px-4 pb-20 pt-28 text-[17px] sm:px-6 sm:text-[19px] md:px-8">
         <section data-section className="mb-6">
           <div className="rounded-3xl border border-sky-200 bg-white/70 p-4 backdrop-blur-xl shadow-[0_16px_50px_rgba(2,132,199,0.12)]">
