@@ -1,19 +1,221 @@
 @import "tailwindcss";
 
+/* ==================================================
+   DARK BLUE DESIGN SYSTEM (GLOBAL)
+================================================== */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Base */
+  --background: #F0F8FF;
+  --surface: #ffffff;
+  --surface-2: rgba(248, 250, 252, 0.90);
+  --surface-dark: rgba(30, 41, 59, 0.85);
 
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Text */
+  --foreground: #000000;
+  --muted-foreground: rgba(0, 0, 0, 0.70);
+
+  /* Brand (Navy blue theme) */
+  --primary: #1e3a8a;
+  --primary-hover: #1e40af;
+  --accent: #1e40af;
+  --accent-2: #2563eb;
+
+  /* UI */
+  --border: rgba(0, 0, 0, 0.10);
+  --ring: rgba(30, 58, 138, 0.25);
+  --shadow: 0 18px 60px rgba(0, 0, 0, 0.08);
+
+  /* Fonts */
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-plus-jakarta-sans);
+}
+
+/* ==================================================
+   BASE RESET
+================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background-color: #ffffff;
-  background-image: none;
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 18px;
+  font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+
+  font-size: clamp(15px, 1.1vw, 17px);
+  line-height: 1.75;
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ==================================================
+   HEADINGS
+================================================== */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading), system-ui, sans-serif;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+/* ==================================================
+   PARAGRAPHS
+================================================== */
+p {
+  color: var(--muted-foreground);
+  max-width: 65ch;
+}
+
+/* ==================================================
+   LINKS
+================================================== */
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--primary-hover);
+}
+
+/* ==================================================
+   BUTTONS (GLOBAL BASE)
+================================================== */
+button {
+  font-family: inherit;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: #ffffff;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+/* ==================================================
+   CARDS / SURFACES
+================================================== */
+.card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+}
+
+.glass {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(248, 250, 252, 0.95)
+  );
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+}
+
+.glass-soft {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(14px);
+}
+
+.glass-dark {
+  background: linear-gradient(
+    180deg,
+    rgba(30, 41, 59, 0.90),
+    rgba(51, 65, 85, 0.80)
+  );
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+}
+
+.neon-ring {
+  box-shadow:
+    0 0 0 1px rgba(30, 58, 138, 0.20),
+    0 0 28px rgba(30, 58, 138, 0.10);
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, #000000, #1e3a8a 45%, #1e40af);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bg-orb {
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(30, 58, 138, 0.08),
+    transparent 55%
+  );
+}
+
+@keyframes floaty {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(0, -14px, 0) rotate(1deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+}
+
+@keyframes drift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(16px, -10px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.anim-floaty {
+  animation: floaty 6s ease-in-out infinite;
+}
+
+.anim-drift {
+  animation: drift 9s ease-in-out infinite;
+}
+
+/* ==================================================
+   IMAGES
+================================================== */
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+}
+
+/* ==================================================
+   SELECTION
+================================================== */
+::selection {
+  background-color: rgba(30, 58, 138, 0.20);
+  color: #000000;
 }

@@ -10,15 +10,15 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-sky-600 text-white hover:bg-sky-500",
+        default: "bg-[#1e3a8a] text-white hover:bg-[#1e40af]",
         destructive:
           "bg-red-500 text-white hover:bg-red-600",
         outline:
-          "border border-sky-200 bg-white hover:bg-sky-50 hover:text-sky-900",
+          "border border-[#1e3a8a] bg-white hover:bg-[#1e3a8a] hover:text-white",
         secondary:
-          "bg-sky-100 text-sky-900 hover:bg-sky-200",
-        ghost: "hover:bg-sky-100 hover:text-sky-900",
-        link: "text-sky-600 underline-offset-4 hover:underline",
+          "bg-[#1e3a8a] text-white hover:bg-[#1e40af]",
+        ghost: "hover:bg-[#1e3a8a] hover:text-white",
+        link: "text-[#1e3a8a] underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -68,7 +68,7 @@ export const FlowButton = React.forwardRef<HTMLButtonElement, FlowButtonProps>(
         ref={ref}
         onClick={onClick}
         className={cn(
-          "group relative overflow-hidden rounded-xl bg-sky-600 px-6 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-sky-500 hover:shadow-lg hover:shadow-sky-500/25",
+          "group relative overflow-hidden rounded-xl bg-[#1e3a8a] px-6 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#1e40af] hover:shadow-lg hover:shadow-[#1e3a8a]/25",
           className
         )}
         {...props}
