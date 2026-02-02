@@ -1,5 +1,48 @@
 @import "tailwindcss";
 
+/* PT Sans Font Family - Local Files */
+@font-face {
+  font-family: 'PT Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('PT Sans Regular'), url('/fonts/PTS55F.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'PT Sans';
+  font-style: italic;
+  font-weight: 400;
+  src: local('PT Sans Italic'), url('/fonts/PTS56F.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'PT Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: local('PT Sans Bold'), url('/fonts/PTS75F.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'PT Sans';
+  font-style: italic;
+  font-weight: 700;
+  src: local('PT Sans Bold Italic'), url('/fonts/PTS76F.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'PT Sans Caption';
+  font-style: normal;
+  font-weight: 400;
+  src: local('PT Sans Caption Regular'), url('/fonts/PTC55F.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'PT Sans Caption';
+  font-style: normal;
+  font-weight: 700;
+  src: local('PT Sans Caption Bold'), url('/fonts/PTC75F.woff') format('woff');
+}
+
 /* ==================================================
    DARK BLUE DESIGN SYSTEM (GLOBAL)
 ================================================== */
@@ -26,8 +69,8 @@
   --shadow: 0 18px 60px rgba(0, 0, 0, 0.08);
 
   /* Fonts */
-  --font-sans: var(--font-inter);
-  --font-heading: var(--font-plus-jakarta-sans);
+  --font-sans: 'PT Sans', system-ui, -apple-system, sans-serif;
+  --font-heading: 'PT Sans', system-ui, sans-serif;
 }
 
 /* ==================================================
@@ -123,11 +166,9 @@ button {
 }
 
 .glass {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.98),
-    rgba(248, 250, 252, 0.95)
-  );
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.98),
+      rgba(248, 250, 252, 0.95));
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
   backdrop-filter: blur(16px);
@@ -140,11 +181,9 @@ button {
 }
 
 .glass-dark {
-  background: linear-gradient(
-    180deg,
-    rgba(30, 41, 59, 0.90),
-    rgba(51, 65, 85, 0.80)
-  );
+  background: linear-gradient(180deg,
+      rgba(30, 41, 59, 0.90),
+      rgba(51, 65, 85, 0.80));
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
   backdrop-filter: blur(16px);
@@ -164,20 +203,20 @@ button {
 }
 
 .bg-orb {
-  background: radial-gradient(
-    circle at 30% 30%,
-    rgba(30, 58, 138, 0.08),
-    transparent 55%
-  );
+  background: radial-gradient(circle at 30% 30%,
+      rgba(30, 58, 138, 0.08),
+      transparent 55%);
 }
 
 @keyframes floaty {
   0% {
     transform: translate3d(0, 0, 0) rotate(0deg);
   }
+
   50% {
     transform: translate3d(0, -14px, 0) rotate(1deg);
   }
+
   100% {
     transform: translate3d(0, 0, 0) rotate(0deg);
   }
@@ -187,9 +226,11 @@ button {
   0% {
     transform: translate3d(0, 0, 0);
   }
+
   50% {
     transform: translate3d(16px, -10px, 0);
   }
+
   100% {
     transform: translate3d(0, 0, 0);
   }

@@ -27,7 +27,7 @@ const MARTEQ_ARTICLES = [
     image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1600&q=80",
     readTime: "6 min",
     date: "Jan 26, 2026",
-    author: "Rachel Green",
+    author: "Rachel Green", 
     featured: false
   },
   {
