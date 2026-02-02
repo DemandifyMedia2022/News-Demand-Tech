@@ -1,24 +1,22 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { ArrowUpRight, Clock, Calendar, Share2, Bookmark, ChevronDown, ChevronRight, Menu, X, List, HelpCircle } from "lucide-react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
-
-gsap.registerPlugin(ScrollTrigger);
+import { Footer } from "@/components/footer";
 
 interface BlogPostProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 const BLOG_POSTS = {
   "1": {
     id: "1",
     category: "FINTEQ",
+    subcategory: "Digital Banking",
     readTime: "5 min read",
     publishDate: "Jan 28, 2024",
     title: "The Future of Digital Banking: AI-Powered Solutions",
@@ -26,6 +24,7 @@ const BLOG_POSTS = {
     image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=1200&q=80",
     author: "Sarah Mitchell",
     authorBio: "Senior fintech analyst with 10+ years of experience in digital banking transformation.",
+    tags: ["AI", "Digital Banking", "Customer Experience", "Security"],
     faq: [
       {
         question: "How is AI changing customer service in banking?",
@@ -60,6 +59,7 @@ const BLOG_POSTS = {
   "2": {
     id: "2",
     category: "CXTEQ",
+    subcategory: "Customer Experience",
     readTime: "3 min read",
     publishDate: "Jan 26, 2024",
     title: "Building Customer-Centric Experiences in 2024",
@@ -67,6 +67,7 @@ const BLOG_POSTS = {
     image: "https://images.unsplash.com/photo-1556155092-490a1ba16284?auto=format&fit=crop&w=1200&q=80",
     author: "Michael Chen",
     authorBio: "Customer experience strategist specializing in digital transformation and journey mapping.",
+    tags: ["Customer Experience", "Digital Transformation", "Journey Mapping", "2024 Trends"],
     faq: [
       {
         question: "What makes a customer experience truly customer-centric?",
@@ -101,6 +102,7 @@ const BLOG_POSTS = {
   "3": {
     id: "3",
     category: "HRTEQ",
+    subcategory: "Talent Acquisition",
     readTime: "4 min read",
     publishDate: "Jan 24, 2024",
     title: "Talent Acquisition Trends: What's Working Now",
@@ -108,6 +110,7 @@ const BLOG_POSTS = {
     image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80",
     author: "Emily Rodriguez",
     authorBio: "HR technology consultant helping companies build high-performing teams through innovative recruitment strategies.",
+    tags: ["Talent Acquisition", "Recruitment", "HR Technology", "Trends"],
     faq: [
       {
         question: "What's the biggest challenge in talent acquisition today?",
@@ -138,424 +141,430 @@ const BLOG_POSTS = {
       <h3>Building Employer Brands</h3>
       <p>Strong employer brands are essential in competitive talent markets. Companies are investing in content marketing, social media presence, and employee advocacy programs to showcase their culture and values.</p>
     `
+  },
+  "4": {
+    id: "4",
+    category: "FINTEQ",
+    subcategory: "Digital Banking",
+    readTime: "6 min read",
+    publishDate: "Jan 25, 2024",
+    title: "Next-Gen Mobile Banking Platforms",
+    excerpt: "Revolutionary mobile banking solutions with biometric authentication and personalized financial insights.",
+    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=80",
+    author: "David Park",
+    authorBio: "Mobile banking specialist with expertise in UX design and biometric security systems.",
+    tags: ["Mobile Banking", "Biometrics", "UX Design", "Fintech"],
+    faq: [
+      {
+        question: "How secure are biometric authentication methods?",
+        answer: "Modern biometric systems use advanced encryption and liveness detection to prevent spoofing, making them more secure than traditional passwords."
+      },
+      {
+        question: "What features define next-gen mobile banking?",
+        answer: "Key features include AI-powered insights, voice banking, personalized offers, real-time notifications, and seamless integration with other financial services."
+      }
+    ],
+    content: `
+      <h2>The Mobile Banking Revolution</h2>
+      <p>Mobile banking has evolved from simple transaction apps to comprehensive financial platforms that serve as customers' primary banking interface. The latest generation of mobile banking platforms leverages cutting-edge technology to deliver unprecedented convenience and security.</p>
+      
+      <h3>Biometric Authentication</h3>
+      <p>Fingerprint scanning, facial recognition, and voice biometrics are replacing traditional passwords, offering both enhanced security and improved user experience. These technologies use advanced AI to detect liveness and prevent spoofing attempts.</p>
+      
+      <h3>AI-Powered Personalization</h3>
+      <p>Machine learning algorithms analyze spending patterns, financial goals, and life events to provide personalized insights, budget recommendations, and product suggestions. This proactive approach helps customers make better financial decisions.</p>
+      
+      <h3>Voice Banking and Conversational AI</h3>
+      <p>Natural language processing enables customers to perform banking tasks through voice commands and chat conversations. This hands-free approach is particularly valuable for accessibility and convenience.</p>
+      
+      <h3>Conclusion</h3>
+      <p>The future of mobile banking lies in creating seamless, intelligent experiences that anticipate customer needs while maintaining the highest security standards. Banks that invest in these technologies will lead the digital transformation.</p>
+    `
+  },
+  "5": {
+    id: "5",
+    category: "FINTEQ",
+    subcategory: "Blockchain",
+    readTime: "8 min read",
+    publishDate: "Jan 26, 2024",
+    title: "Blockchain in Finance: Beyond Cryptocurrency",
+    excerpt: "Enterprise blockchain applications reshaping traditional financial services and operations.",
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=1200&q=80",
+    author: "Robert Chen",
+    authorBio: "Blockchain consultant specializing in enterprise implementations and DeFi integrations.",
+    tags: ["Blockchain", "Enterprise", "DeFi", "Cryptocurrency"],
+    faq: [
+      {
+        question: "How are financial institutions using blockchain beyond cryptocurrency?",
+        answer: "Banks use blockchain for cross-border payments, trade finance, identity verification, smart contracts, and settlement systems to reduce costs and improve efficiency."
+      },
+      {
+        question: "What are the main benefits of blockchain in traditional finance?",
+        answer: "Key benefits include reduced transaction costs, faster settlement times, improved transparency, enhanced security, and reduced operational complexity."
+      }
+    ],
+    content: `
+      <h2>Blockchain's Financial Revolution</h2>
+      <p>While cryptocurrency brought blockchain to mainstream attention, the technology's true potential lies in transforming traditional financial services. From cross-border payments to trade finance, blockchain is reshaping how financial institutions operate.</p>
+      
+      <h3>Cross-Border Payments</h3>
+      <p>Blockchain enables near-instant international payments at a fraction of traditional costs. By eliminating intermediaries and using digital currencies or stablecoins, banks can settle transactions in minutes rather than days.</p>
+      
+      <h3>Trade Finance Revolution</h3>
+      <p>Smart contracts automate trade finance processes, reducing paperwork and fraud while increasing transparency. All parties can track shipments and payments in real-time on an immutable ledger.</p>
+      
+      <h3>Digital Identity and KYC</h3>
+      <p>Blockchain-based identity systems allow customers to control their data while simplifying KYC processes. Once verified, customer credentials can be securely shared across institutions with customer consent.</p>
+      
+      <h3>Conclusion</h3>
+      <p>Blockchain technology is moving beyond speculation to become a fundamental infrastructure for modern finance. Early adopters will gain significant competitive advantages in efficiency and innovation.</p>
+    `
+  },
+  "6": {
+    id: "6",
+    category: "FINTEQ",
+    subcategory: "Security",
+    readTime: "10 min read",
+    publishDate: "Jan 24, 2024",
+    title: "Fraud Detection 2.0: Machine Learning Security",
+    excerpt: "Advanced ML algorithms and AI systems protecting financial institutions from sophisticated fraud attempts.",
+    image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=1200&q=80",
+    author: "Amanda Foster",
+    authorBio: "Cybersecurity expert specializing in AI-powered fraud detection and financial crime prevention.",
+    tags: ["Security", "Machine Learning", "Fraud Detection", "AI"],
+    faq: [
+      {
+        question: "How does ML improve fraud detection compared to traditional methods?",
+        answer: "ML can analyze millions of transactions in real-time, identify subtle patterns, and adapt to new fraud tactics, while traditional rule-based systems are static and limited."
+      },
+      {
+        question: "What types of fraud can ML detect most effectively?",
+        answer: "ML excels at detecting account takeover, identity theft, transaction fraud, money laundering patterns, and emerging fraud schemes that would evade rule-based systems."
+      }
+    ],
+    content: `
+      <h2>The New Era of Financial Security</h2>
+      <p>Financial fraud has become increasingly sophisticated, requiring advanced detection methods. Machine learning and AI are revolutionizing fraud detection, enabling real-time identification of suspicious activities with unprecedented accuracy.</p>
+      
+      <h3>Real-Time Transaction Monitoring</h3>
+      <p>ML algorithms analyze every transaction as it occurs, comparing it against historical patterns and known fraud indicators. This real-time analysis can block fraudulent transactions before they complete.</p>
+      
+      <h3>Behavioral Analytics</h3>
+      <p>AI systems learn each customer's normal behavior patterns, including transaction amounts, locations, timing, and device usage. Deviations from these patterns trigger immediate alerts for review.</p>
+      
+      <h3>Network Analysis</h3>
+      <p>Advanced ML techniques analyze relationships between accounts, identifying fraud rings and organized crime networks that might be missed when examining accounts in isolation.</p>
+      
+      <h3>Conclusion</h3>
+      <p>The future of fraud detection lies in AI systems that continuously learn and adapt to new threats. Financial institutions that embrace these technologies will be better positioned to protect their customers and maintain trust.</p>
+    `
+  },
+  "7": {
+    id: "7",
+    category: "HRTEQ",
+    subcategory: "Recruitment",
+    readTime: "5 min read",
+    publishDate: "Jan 15, 2024",
+    title: "Modern Recruitment Strategies",
+    excerpt: "Discover how leading companies are transforming their hiring processes with data-driven approaches and AI-powered tools.",
+    image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1200&q=80",
+    author: "Lisa Thompson",
+    authorBio: "Talent acquisition leader with experience in implementing AI-powered recruitment solutions.",
+    tags: ["Recruitment", "AI", "Data-Driven", "Hiring"],
+    faq: [
+      {
+        question: "How are companies using AI in recruitment?",
+        answer: "Companies use AI for resume screening, candidate matching, interview scheduling, assessment analysis, and predicting candidate success based on historical data."
+      },
+      {
+        question: "What makes a recruitment strategy modern?",
+        answer: "Modern strategies use data analytics, AI tools, candidate experience focus, social media recruiting, and continuous improvement based on metrics."
+      }
+    ],
+    content: `
+      <h2>Transforming Talent Acquisition</h2>
+      <p>The recruitment landscape has been revolutionized by technology and data analytics. Modern recruitment strategies leverage AI, machine learning, and advanced analytics to identify, attract, and retain top talent more effectively than ever before.</p>
+      
+      <h3>AI-Powered Candidate Matching</h3>
+      <p>Machine learning algorithms analyze job requirements and candidate profiles to identify the best matches, going beyond keywords to understand skills, experience, and potential cultural fit.</p>
+      
+      <h3>Predictive Analytics</h3>
+      <p>Advanced analytics predict which candidates are most likely to succeed in specific roles based on historical hiring data, performance metrics, and retention patterns.</p>
+      
+      <h3>Automated Screening</h3>
+      <p>AI systems can review thousands of applications in minutes, identifying qualified candidates and ranking them based on job fit, significantly reducing time-to-hire.</p>
+      
+      <h3>Conclusion</h3>
+      <p>Modern recruitment is about combining technology efficiency with human judgment. The most successful strategies use AI to handle repetitive tasks while freeing recruiters to focus on building relationships and making strategic decisions.</p>
+    `
   }
 };
 
 export default function BlogPost({ params }: BlogPostProps) {
-  const post = BLOG_POSTS[params.id as keyof typeof BLOG_POSTS];
-  
-  const contentRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const metaRef = useRef<HTMLDivElement>(null);
-  const [activeSection, setActiveSection] = useState("");
-  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
-  const [mobileTocOpen, setMobileTocOpen] = useState(false);
-
-  // Extract headings for TOC
-  const extractHeadings = (content: string) => {
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = content;
-    const headings = tempDiv.querySelectorAll('h2, h3');
-    return Array.from(headings).map((heading, index) => ({
-      id: `heading-${index}`,
-      text: heading.textContent || '',
-      level: heading.tagName.toLowerCase(),
-      element: heading
-    }));
-  };
-
-  const headings = post ? extractHeadings(post.content) : [];
+  const [post, setPost] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!post) return;
-
-    const ctx = gsap.context(() => {
-      // Animate title
-      gsap.from(titleRef.current, {
-        y: 50,
-        opacity: 0,
-        duration: 1.2,
-        ease: "power3.out"
-      });
-
-      // Animate meta information
-      gsap.from(metaRef.current, {
-        y: 30,
-        opacity: 0,
-        duration: 1,
-        delay: 0.2,
-        ease: "power3.out"
-      });
-
-      // Animate content paragraphs
-      const paragraphs = contentRef.current?.querySelectorAll('p, h2, h3');
-      if (paragraphs) {
-        gsap.from(paragraphs, {
-          y: 40,
-          opacity: 0,
-          duration: 0.8,
-          stagger: 0.1,
-          delay: 0.4,
-          ease: "power2.out"
-        });
-      }
-    }, contentRef);
-
-    return () => ctx.revert();
-  }, [post]);
-
-  useEffect(() => {
-    // Add IDs to headings for smooth scrolling
-    if (contentRef.current) {
-      const headings = contentRef.current.querySelectorAll('h2, h3');
-      headings.forEach((heading, index) => {
-        heading.id = `heading-${index}`;
-      });
-    }
-
-    // Handle scroll spy for TOC
-    const handleScroll = () => {
-      const headingElements = document.querySelectorAll('h2, h3');
-      let current = "";
-      
-      headingElements.forEach((heading) => {
-        const rect = heading.getBoundingClientRect();
-        if (rect.top <= 150) {
-          current = heading.id;
-        }
-      });
-      
-      setActiveSection(current);
+    const load = async () => {
+      const { id } = await params;
+      setPost(BLOG_POSTS[id as keyof typeof BLOG_POSTS]);
+      setLoading(false);
     };
+    load();
+  }, [params]);
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [post]);
-
-  const scrollToHeading = (headingId: string) => {
-    const element = document.getElementById(headingId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-    setMobileTocOpen(false);
-  };
-
-  const toggleFaq = (index: number) => {
-    setExpandedFaq(expandedFaq === index ? null : index);
-  };
+  if (loading) return null;
 
   if (!post) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Blog post not found</h1>
-          <Link href="/" className="text-[#1e3a8a] hover:text-[#1e40af]">
-            Return to home
+      <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">
+        <div className="text-center space-y-4">
+          <h1 className="text-3xl font-bold">Post not found</h1>
+          <Link href="/" className="inline-flex items-center gap-2 text-[var(--accent)]">
+            Go Home <ArrowUpRight size={16} />
           </Link>
         </div>
       </div>
     );
   }
 
+  /* ---------------- TOC ---------------- */
+
+  const extractHeadings = (html: string) => {
+    const regex = /<h([2-3])[^>]*>(.*?)<\/h[2-3]>/g;
+    const items: any[] = [];
+    let match;
+    let i = 0;
+
+    while ((match = regex.exec(html))) {
+      items.push({
+        id: `heading-${i}`,
+        text: match[2].replace(/<[^>]*>/g, ""),
+        level: match[1],
+      });
+      i++;
+    }
+    return items;
+  };
+
+  const headings = extractHeadings(post.content);
+
+  const processedContent = post.content.replace(
+    /<h([2-3])([^>]*)>(.*?)<\/h[2-3]>/g,
+    (
+      _match: string,
+      level: "2" | "3",
+      attrs: string,
+      text: string
+    ) => {
+
+      const index = headings.findIndex(h => h.text === text.replace(/<[^>]*>/g, ""));
+      return `<h${level}${attrs} id="heading-${index}">${text}</h${level}>`;
+    }
+  );
+
+  /* ---------------- UI ---------------- */
+
   return (
-    <article className="min-h-screen bg-[var(--background)] relative overflow-hidden">
-      {/* Enhanced Background decoration */}
-      <div className="pointer-events-none absolute -left-40 top-10 h-[34rem] w-[34rem] rounded-full bg-[rgba(30,58,138,0.08)] blur-3xl anim-drift" />
-      <div className="pointer-events-none absolute -right-56 top-20 h-[40rem] w-[40rem] rounded-full bg-[rgba(30,58,138,0.06)] blur-3xl anim-floaty" />
-      <div className="pointer-events-none absolute left-1/3 top-[40rem] h-[28rem] w-[28rem] rounded-full bg-[rgba(30,58,138,0.04)] blur-3xl anim-drift" />
-      
-      {/* Floating particles for futuristic effect */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-10 w-2 h-2 bg-[rgba(30,58,138,0.3)] rounded-full anim-floaty" />
-        <div className="absolute top-40 right-20 w-1 h-1 bg-[rgba(30,58,138,0.2)] rounded-full anim-drift" />
-        <div className="absolute bottom-40 left-20 w-3 h-3 bg-[rgba(30,58,138,0.15)] rounded-full anim-floaty" />
-        <div className="absolute bottom-20 right-10 w-2 h-2 bg-[rgba(30,58,138,0.25)] rounded-full anim-drift" />
-      </div>
+    <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
 
-      {/* Mobile TOC Toggle */}
-      <button
-        onClick={() => setMobileTocOpen(!mobileTocOpen)}
-        className="fixed top-4 right-4 z-50 p-3 bg-white/80 backdrop-blur-sm rounded-full shadow-lg border border-white/20 md:hidden"
-      >
-        {mobileTocOpen ? <X size={20} className="text-gray-700" /> : <List size={20} className="text-gray-700" />}
-      </button>
+      {/* ---------- HERO ---------- */}
+      <section className="w-full bg-gradient-to-br from-[var(--primary)]/10 via-[var(--background)] to-[var(--accent)]/10 py-16">
+        <div className="max-w-7xl mx-auto px-4 space-y-6">
 
-      {/* Enhanced Hero Section */}
-      <div className="relative h-[32rem] md:h-[40rem] overflow-hidden">
-        <Image
-          src={post.image}
-          alt={post.title}
-          fill
-          className="object-cover transform scale-105 hover:scale-110 transition-transform duration-1000"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/20 to-transparent" />
-        
-        {/* Animated overlay pattern */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%)`,
-            backgroundSize: '200% 200%',
-            animation: 'shimmer 3s ease-in-out infinite'
-          }} />
-        </div>
-        
-        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-          <div className="max-w-4xl mx-auto">
-            <div className="mb-4">
-              <Link 
-                href="/"
-                className="inline-flex items-center text-white/80 hover:text-white transition-all duration-300 mb-4 group"
-              >
-                <span className="mr-2 group-hover:-translate-x-1 transition-transform">←</span>
-                Back to articles
-              </Link>
+
+          {/* IMAGE CARD */}
+          <div className="relative overflow-hidden rounded-3xl glass shadow-xl mt-20">
+
+            {/* Featured Image */}
+            <div className="w-full h-100 rounded-3xl overflow-hidden bg-[var(--surface)] shadow-lg">
+              <img
+                src={post.image}
+                alt={post.title}
+                className="w-full h-full object-cover"
+              />
+
+
+              {/* Soft gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
             </div>
-            <div className="flex flex-wrap items-center gap-3 md:gap-4 mb-6">
-              <span className="inline-flex items-center px-4 py-2 rounded-full bg-white/20 backdrop-blur-md text-white font-semibold border border-white/30 hover:bg-white/30 transition-all duration-300">
+
+
+            {/* CONTENT OVER IMAGE */}
+            <div className="absolute bottom-0 left-0 w-full p-4 md:p-5">
+              <span className="inline-block mb-3 px-3 py-1 rounded-full bg-white/90 text-[var(--primary)] text-sm font-semibold">
                 {post.category}
               </span>
-              <div className="flex items-center gap-4 text-white/80 text-sm">
-                <div className="flex items-center gap-1">
-                  <Calendar size={14} className="hover:text-white transition-colors" />
-                  <span>{post.publishDate}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Clock size={14} className="hover:text-white transition-colors" />
-                  <span>{post.readTime}</span>
-                </div>
-              </div>
-            </div>
-            <h1 
-              ref={titleRef}
-              className="text-3xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4"
-            >
-              <span className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+
+              <h1 className="text-3xl md:text-4xl font-semibold leading-tight text-white max-w-4xl">
                 {post.title}
-              </span>
-            </h1>
-            <div className="h-1 w-20 bg-gradient-to-r from-white to-transparent rounded-full" />
+              </h1>
+
+              <p className="mt-3 text-base md:text-lg text-white/85 max-w-3xl">
+                {post.excerpt}
+              </p>
+
+              {/* META ROW */}
+              <div className="flex flex-wrap items-center gap-6 px-8 py-4 bg-[var(--surface)] border-t border-[var(--border)] rounded-2xl mt-10">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-[var(--primary)] text-white text-sm font-semibold flex items-center justify-center">
+                    {post.author.split(" ").map((n: string) => n[0]).join("")}
+                  </div>
+                  <span className="text-sm font-medium">{post.author}</span>
+                </div>
+
+                <span className="text-sm text-[var(--muted-foreground)]">
+                  {post.publishDate}
+                </span>
+
+                <span className="text-sm text-[var(--muted-foreground)]">
+                  {post.readTime}
+                </span>
+
+                <button className="ml-auto p-2 rounded-lg hover:bg-[var(--surface-2)]">
+                  <Share2 size={18} />
+                </button>
+              </div>
+
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Table of Contents - Desktop */}
-      <div className="hidden md:block">
-        <div className="fixed left-8 top-1/2 -translate-y-1/2 w-64 max-h-[70vh] overflow-y-auto glass-dark rounded-2xl p-6 border border-white/10 z-40">
-          <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-            <List size={16} />
-            Contents
+      {/* ---------- CONTENT ---------- */}
+      <section className="max-w-8xl mx-auto px-6 py-6 grid grid-cols-1 lg:grid-cols-4 gap-6 mt-[-40px]">
+
+        {/* TOC */}
+        <aside className="hidden lg:block sticky top-3 h-fit glass rounded-xl p-4">
+          <h3 className="font-semibold mb-3 flex items-center gap-2">
+            <List size={20} /> Contents
           </h3>
-          <nav className="space-y-2">
-            {headings.map((heading, index) => (
-              <button
-                key={index}
-                onClick={() => scrollToHeading(heading.id)}
-                className={`block w-full text-left px-3 py-2 rounded-lg transition-all duration-300 ${
-                  activeSection === heading.id
-                    ? 'bg-white/20 text-white font-medium'
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
-                } ${heading.level === 'h3' ? 'pl-6 text-sm' : ''}`}
+          <nav className="space-y-1 text-sm">
+            {headings.map((h, i) => (
+              <a
+                key={i}
+                href={`#${h.id}`}
+                className={`block px-2 py-1 rounded-md transition hover:bg-[var(--primary)]/10 ${h.level === "3" ? "ml-4 text-[var(--muted-foreground)]" : "font-medium"
+                  }`}
               >
-                <div className="flex items-center gap-2">
-                  {activeSection === heading.id && <ChevronRight size={12} />}
-                  <span className="truncate">{heading.text}</span>
-                </div>
-              </button>
+                {h.text}
+              </a>
             ))}
           </nav>
-        </div>
-      </div>
+        </aside>
 
-      {/* Mobile TOC */}
-      {mobileTocOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setMobileTocOpen(false)} />
-          <div className="absolute right-0 top-0 h-full w-80 bg-white/95 backdrop-blur-lg shadow-2xl">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <List size={18} />
-                  Contents
-                </h3>
-                <button onClick={() => setMobileTocOpen(false)}>
-                  <X size={20} className="text-gray-600" />
-                </button>
-              </div>
-              <nav className="space-y-2">
-                {headings.map((heading, index) => (
-                  <button
-                    key={index}
-                    onClick={() => scrollToHeading(heading.id)}
-                    className={`block w-full text-left px-3 py-3 rounded-lg transition-all duration-300 ${
-                      activeSection === heading.id
-                        ? 'bg-blue-100 text-blue-900 font-medium'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    } ${heading.level === 'h3' ? 'pl-6 text-sm' : ''}`}
-                  >
-                    <div className="flex items-center gap-2">
-                      {activeSection === heading.id && <ChevronRight size={12} />}
-                      <span className="truncate">{heading.text}</span>
-                    </div>
-                  </button>
-                ))}
-              </nav>
+        {/* ARTICLE */}
+      <article className="lg:col-span-3">
+        <div className="relative glass rounded-3xl p-10 md:p-20 shadow-2xl neon-ring">
+          
+          {/* Left accent border */}
+          <div className="absolute left-0 top-0.5 h-full w-2 bg-gradient-to-b from-[var(--primary)] via-[var(--accent)] to-transparent rounded-l-3xl" />
+          
+          <div 
+            className="relative z-10 space-y-12"
+            style={{
+              fontSize: '1.20rem', // Base font size for paragraphs
+              lineHeight: '1.3'
+            }}
+            dangerouslySetInnerHTML={{ 
+              __html: processedContent.replace(
+                /<h([2-3])([^>]*)>(.*?)<\/h[2-3]>/g,
+                (match: string, level: string, attrs: string, text: string) => {
+                  const size = level === '2' ? '1.5rem' : '1.3rem';
+                  const weight = level === '2' ? '700' : '500';
+                  const color = level === '2' ? 'var(--foreground)' : 'var(--primary)';
+                  const marginTop = level === '1' ? '1.2rem' : '0.7rem';
+                  const marginBottom = level === '2' ? '1.2rem' : '1rem';
+                  const borderBottom = level === '2' ? '2px solid var(--primary)' : 'none';
+                  const paddingBottom = level === '2' ? '0.5rem' : '0';
+                  
+                  return `<h${level}${attrs} style="font-size: ${size}; font-weight: ${weight}; color: ${color}; margin-top: ${marginTop}; margin-bottom: ${marginBottom}; border-bottom: ${borderBottom}; padding-bottom: ${paddingBottom}; letter-spacing: -0.01em;">${text}</h${level}>`;
+                }
+              ).replace(
+                /<p([^>]*)>(.*?)<\/p>/g,
+                (match: string, attrs: string, text: string) => {
+                  return `<p${attrs} style="margin: 1rem 0; color: var(--muted-foreground);">${text}</p>`;
+                }
+              ).replace(
+                /<strong([^>]*)>(.*?)<\/strong>/g,
+                (match: string, attrs: string, text: string) => {
+                  return `<strong${attrs} style="font-size: 1.2rem; font-weight: 700; color: var(--foreground);">${text}</strong>`;
+                }
+              ).replace(
+                /<ul([^>]*)>(.*?)<\/ul>/g,
+                (match: string, attrs: string, text: string) => {
+                  return `<ul${attrs} style="font-size: 1.2rem; margin: 1.5rem 0; color: var(--muted-foreground);">${text}</ul>`;
+                }
+              ).replace(
+                /<li([^>]*)>(.*?)<\/li>/g,
+                (match: string, attrs: string, text: string) => {
+                  return `<li${attrs} style="margin: 0.75rem 0; line-height: 1.6;">${text}</li>`;
+                }
+              ).replace(
+                /<blockquote([^>]*)>(.*?)<\/blockquote>/g,
+                (match: string, attrs: string, text: string) => {
+                  return `<blockquote${attrs} style="font-size: 1.2rem; font-style: italic; border-left: 3px solid var(--primary); background: linear-gradient(to right, var(--primary)/8, transparent); padding: 1.2rem; margin: 1rem 0; color: var(--muted-foreground); border-radius: 0 0.55rem 0.55rem 0;">${text}</blockquote>`;
+                }
+              ).replace(
+                /<code([^>]*)>(.*?)<\/code>/g,
+                (match: string, attrs: string, text: string) => {
+                  return `<code${attrs} style="font-size: 1.2rem; background: var(--surface-2); color: var(--accent); padding: 0.5rem 1rem; border-radius: 0.5rem; font-family: monospace; font-weight: 600;">${text}</code>`;
+                }
+              ).replace(
+                /<hr([^>]*)>/g,
+                (match: string, attrs: string) => {
+                  return `<hr${attrs} style="border: 1px solid var(--primary); margin: 2.2rem 0; opacity: 0.3;">`;
+                }
+              )
+            }} 
+          />
+          
+          {/* Bottom decorative gradient */}
+          <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[var(--background)] via-[var(--background)]/90 to-transparent rounded-b-3xl pointer-events-none" />
+        </div>
+      </article>
+</section>
+
+      {/* ---------- FAQ ---------- */}
+      {post.faq?.length > 0 && (
+        <section className="max-w-6xl mx-auto px-6 py-8">
+          <div className="glass rounded-xl p-6">
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+              <HelpCircle size={22} /> FAQs
+            </h2>
+            <div className="space-y-2">
+              {post.faq.map((f: any, i: number) => (
+                <FAQItem key={i} {...f} />
+              ))}
             </div>
           </div>
+        </section>
+      )}
+      
+      <Footer />
+    </main>
+  );
+}
+
+/* ---------------- FAQ ---------------- */
+
+function FAQItem({ question, answer }: { question: string; answer: string }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="border border-[var(--border)] rounded-lg overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex justify-between items-center p-4 text-left hover:bg-[var(--surface-2)]"
+      >
+        <span className="font-medium">{question}</span>
+        <ChevronDown size={18} className={`transition ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="px-4 pb-4 text-sm text-[var(--muted-foreground)]">
+          {answer}
         </div>
       )}
-
-      {/* Enhanced Content Section */}
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        {/* Enhanced Author Section */}
-        <div 
-          ref={metaRef}
-          className="glass rounded-3xl border border-white/20 p-6 md:p-8 mb-8 shadow-xl hover:shadow-2xl transition-all duration-300 group"
-        >
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#1e3a8a] to-[#1e40af] flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-              <span className="text-white text-2xl font-bold">
-                {post.author.split(' ').map(n => n[0]).join('')}
-              </span>
-            </div>
-            <div className="flex-1">
-              <h3 className="text-xl font-semibold text-black mb-1">{post.author}</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">{post.authorBio}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <button className="p-3 rounded-xl bg-white/50 hover:bg-white/70 transition-all duration-300 hover:scale-110 group">
-                <Share2 size={18} className="text-gray-700 group-hover:text-blue-600" />
-              </button>
-              <button className="p-3 rounded-xl bg-white/50 hover:bg-white/70 transition-all duration-300 hover:scale-110 group">
-                <Bookmark size={18} className="text-gray-700 group-hover:text-blue-600" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Enhanced Blog Content */}
-        <div 
-          ref={contentRef}
-          className="glass rounded-3xl border border-white/20 p-8 md:p-12 shadow-xl mb-12"
-        >
-          <div 
-            className="prose prose-lg max-w-none text-gray-800 leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
-        </div>
-
-        {/* FAQ Section */}
-        <div className="mb-12">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="p-3 bg-gradient-to-br from-[#1e3a8a] to-[#1e40af] rounded-xl shadow-lg">
-              <HelpCircle size={24} className="text-white" />
-            </div>
-            <h2 className="text-3xl font-bold text-black">Frequently Asked Questions</h2>
-          </div>
-          
-          <div className="space-y-4">
-            {post.faq.map((faq, index) => (
-              <div
-                key={index}
-                className="glass rounded-2xl border border-white/20 overflow-hidden hover:shadow-xl transition-all duration-300"
-              >
-                <button
-                  onClick={() => toggleFaq(index)}
-                  className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-white/50 transition-colors duration-300"
-                >
-                  <h3 className="font-semibold text-gray-900 pr-4">{faq.question}</h3>
-                  <div className={`transform transition-transform duration-300 ${
-                    expandedFaq === index ? 'rotate-180' : ''
-                  }`}>
-                    <ChevronDown size={20} className="text-gray-600" />
-                  </div>
-                </button>
-                
-                <div className={`overflow-hidden transition-all duration-500 ${
-                  expandedFaq === index ? 'max-h-96' : 'max-h-0'
-                }`}>
-                  <div className="px-6 pb-4">
-                    <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Enhanced Related Articles */}
-        <div className="mt-16">
-          <h2 className="text-3xl font-bold text-black mb-8">Related Articles</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {Object.values(BLOG_POSTS)
-              .filter(article => article.id !== post.id)
-              .slice(0, 2)
-              .map(article => (
-                <Link 
-                  key={article.id}
-                  href={`/blog/${article.id}`}
-                  className="group glass rounded-2xl border border-white/20 p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
-                >
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xs font-semibold text-[#1e3a8a] bg-[#1e3a8a]/10 px-3 py-1 rounded-full">
-                      {article.category}
-                    </span>
-                    <span className="text-xs text-gray-500">{article.readTime}</span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-black mb-2 group-hover:text-[#1e3a8a] transition-colors line-clamp-2">
-                    {article.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm line-clamp-3 mb-4">{article.excerpt}</p>
-                  <div className="flex items-center text-[#1e3a8a] text-sm font-medium group-hover:text-[#1e40af] transition-colors">
-                    Read more
-                    <ArrowUpRight size={16} className="ml-1 transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                  </div>
-                </Link>
-              ))}
-          </div>
-        </div>
-
-        {/* Enhanced CTA Section */}
-        <div className="mt-16 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#1e3a8a] via-[#1e40af] to-[#2563eb] opacity-90" />
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)`,
-          }} />
-          <div className="relative glass-dark rounded-3xl p-8 md:p-12 text-center border border-white/20">
-            <div className="max-w-2xl mx-auto">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Enjoyed this article?
-              </h2>
-              <p className="text-white/90 text-lg mb-8 leading-relaxed">
-                Subscribe to our newsletter for more insights on technology and business trends.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
-                <input 
-                  type="email" 
-                  placeholder="Enter your email"
-                  className="px-6 py-4 rounded-xl text-gray-900 bg-white/90 backdrop-blur-sm border border-white/20 focus:outline-none focus:ring-4 focus:ring-white/30 transition-all duration-300"
-                />
-                <button className="px-8 py-4 bg-white text-[#1e3a8a] font-semibold rounded-xl hover:bg-white/90 transition-all duration-300 hover:scale-105 hover:shadow-xl">
-                  Subscribe
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Add shimmer animation */}
-      <style jsx>{`
-        @keyframes shimmer {
-          0% {
-            background-position: -200% center;
-          }
-          100% {
-            background-position: 200% center;
-          }
-        }
-      `}</style>
-    </article>
+    </div>
   );
 }
