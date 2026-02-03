@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { Header } from "@/components/ui/header-3";
-import { Footer } from "@/components/footer";
+import Footer from "@/components/footer";
 import { Card, CardContent } from "@/components/ui/card";
 import {
     Sparkles,

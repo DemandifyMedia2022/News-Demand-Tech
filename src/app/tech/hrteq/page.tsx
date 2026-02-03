@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { ArrowUpRight, Calendar, Clock, TrendingUp, Users, Target, Brain, Heart, Briefcase, ChevronRight, ArrowRight } from "lucide-react";
-import { Footer } from "@/components/footer";
+import Link from "next/link";
+import { ArrowUpRight, Users, TrendingUp, BarChart3, Target, Zap, Shield, Globe, CheckCircle, Star, ArrowRight, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram, Briefcase, Brain, Heart, Plus, Clock } from "lucide-react";
+import Footer from "@/components/footer";
 
 const HR_CATEGORIES = [
   {
@@ -262,52 +263,106 @@ export default function HRTEQPage() {
                 </div>
               </div>
 
-              {/* Right Banner - Smaller */}
+              {/* Right Banner - Enhanced Attractive UI */}
               <div className="lg:col-span-2 mt-20">
-                <div className="relative group">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] rounded-2xl opacity-25 group-hover:opacity-35 transition-opacity duration-300 blur-xl"></div>
-                  <div className="relative bg-white rounded-2xl overflow-hidden shadow-xl border border-[var(--border)]">
-                    <div className="relative h-84 overflow-hidden">
-                      <Image
-                        src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80"
-                        alt="HR Technology Analytics"
-                        fill
-                        className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                        unoptimized={unoptimized}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                      
-                      {/* Floating Content Overlay */}
-                      <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/20">
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                            <span className="text-white text-xs font-medium">LIVE ANALYTICS</span>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2 text-white">
-                            <div>
-                              <div className="text-lg font-bold">94%</div>
-                              <div className="text-xs opacity-80">Accuracy</div>
+                <div className="space-y-6">
+                  {/* Main Analytics Card */}
+                  <div className="relative group">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] rounded-2xl opacity-25 group-hover:opacity-35 transition-opacity duration-300 blur-xl"></div>
+                    <div className="relative bg-white rounded-2xl overflow-hidden shadow-xl border border-[var(--border)]">
+                      <div className="relative h-84 overflow-hidden">
+                        <Image
+                          src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80"
+                          alt="HR Technology Analytics"
+                          fill
+                          className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                          unoptimized={unoptimized}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                        
+                        {/* Enhanced Floating Content Overlay */}
+                        <div className="absolute bottom-0 left-0 right-0 p-4">
+                          <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 neon-ring">
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                <span className="text-white text-xs font-bold uppercase tracking-wider">Live Analytics</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <div className="w-1 h-1 bg-white/60 rounded-full"></div>
+                                <div className="w-1 h-1 bg-white/60 rounded-full"></div>
+                                <div className="w-1 h-1 bg-white/60 rounded-full"></div>
+                              </div>
                             </div>
-                            <div>
-                              <div className="text-lg font-bold">2.1M</div>
-                              <div className="text-xs opacity-80">Data Points</div>
+                            <div className="grid grid-cols-2 gap-3 text-white">
+                              <div className="bg-white/10 rounded-lg p-2 text-center">
+                                <div className="text-xl font-bold">94%</div>
+                                <div className="text-xs opacity-80">Accuracy</div>
+                              </div>
+                              <div className="bg-white/10 rounded-lg p-2 text-center">
+                                <div className="text-xl font-bold">2.1M</div>
+                                <div className="text-xs opacity-80">Data Points</div>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
+                      
+                      <div className="p-4 bg-gradient-to-br from-gray-50 to-white">
+                        <h3 className="text-base font-bold mb-2" style={{ color: 'var(--foreground)' }}>
+                          AI-Powered Talent Solutions
+                        </h3>
+                        <p className="text-xs mb-3 leading-relaxed line-clamp-2" style={{ color: 'var(--muted-foreground)' }}>
+                          Advanced machine learning algorithms that optimize recruitment, retention, and workforce planning.
+                        </p>
+                        <button className="w-full bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] text-white px-4 py-2 rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2 text-sm">
+                          Explore Dashboard
+                          <ArrowUpRight size={14} />
+                        </button>
+                      </div>
                     </div>
-                    
-                    <div className="p-4 bg-gradient-to-br from-gray-50 to-white">
-                      <h3 className="text-base font-bold mb-2" style={{ color: 'var(--foreground)' }}>
-                        AI-Powered Talent Solutions
-                      </h3>
-                      <p className="text-xs mb-3 leading-relaxed line-clamp-2" style={{ color: 'var(--muted-foreground)' }}>
-                        Advanced machine learning algorithms that optimize recruitment, retention, and workforce planning.
-                      </p>
-                      <button className="w-full bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] text-white px-4 py-2 rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2 text-sm">
-                        Explore Dashboard
-                        <ArrowUpRight size={14} />
+                  </div>
+
+                  {/* Additional Stats Cards */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="glass rounded-xl p-4 neon-ring hover:scale-105 transition-transform duration-300">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                          <Users className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="text-xs font-medium text-green-600">+12%</span>
+                      </div>
+                      <div className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>8,432</div>
+                      <div className="text-xs" style={{ color: 'var(--muted-foreground)' }}>Active Employees</div>
+                    </div>
+
+                    <div className="glass rounded-xl p-4 neon-ring hover:scale-105 transition-transform duration-300">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                          <Target className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="text-xs font-medium text-green-600">+8%</span>
+                      </div>
+                      <div className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>92%</div>
+                      <div className="text-xs" style={{ color: 'var(--muted-foreground)' }}>Goal Achievement</div>
+                    </div>
+                  </div>
+
+                  {/* Quick Actions Card */}
+                  <div className="glass rounded-xl p-4 neon-ring">
+                    <h4 className="text-sm font-bold mb-3" style={{ color: 'var(--foreground)' }}>Quick Actions</h4>
+                    <div className="space-y-2">
+                      <button className="w-full text-left px-3 py-2 rounded-lg bg-[var(--primary)]/10 hover:bg-[var(--primary)]/20 transition-colors duration-200 flex items-center gap-2 group">
+                        <div className="w-6 h-6 bg-[var(--primary)] rounded flex items-center justify-center">
+                          <Plus className="w-3 h-3 text-white" />
+                        </div>
+                        <span className="text-sm font-medium group-hover:text-[var(--primary)]" style={{ color: 'var(--foreground)' }}>Create Campaign</span>
+                      </button>
+                      <button className="w-full text-left px-3 py-2 rounded-lg bg-[var(--accent)]/10 hover:bg-[var(--accent)]/20 transition-colors duration-200 flex items-center gap-2 group">
+                        <div className="w-6 h-6 bg-[var(--accent)] rounded flex items-center justify-center">
+                          <BarChart3 className="w-3 h-3 text-white" />
+                        </div>
+                        <span className="text-sm font-medium group-hover:text-[var(--accent)]" style={{ color: 'var(--foreground)' }}>View Reports</span>
                       </button>
                     </div>
                   </div>
@@ -417,10 +472,14 @@ export default function HRTEQPage() {
                               </span>
                               <span>{story.date}</span>
                             </div>
-                            <button className="inline-flex items-center gap-1 px-4 py-2 bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] text-white text-xs font-medium rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105">
-                              Read more
-                              <ArrowUpRight className="w-3 h-3" />
-                            </button>
+                            <Link 
+                              href={`/blog/${story.id}`}
+                              className="inline-flex items-center gap-1 px-4 py-2 bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] text-white text-xs font-medium rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105"
+                              style={{ color: 'white' }}
+                            >
+                              <span style={{ color: 'white' }}>Read more</span>
+                              <ArrowUpRight className="w-3 h-3" style={{ color: 'white' }} />
+                            </Link>
                           </div>
                         </div>
                       </article>

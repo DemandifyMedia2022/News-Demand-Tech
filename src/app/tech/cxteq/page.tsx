@@ -2,8 +2,9 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { ArrowUpRight, Calendar, Clock, TrendingUp, Users, MessageSquare, Headphones, Star, Zap, ShieldCheck, HeartHandshake, Database } from "lucide-react";
-import { Footer } from "@/components/footer";
+import Link from "next/link";
+import { ArrowUpRight, Users, MessageSquare, TrendingUp, Headphones, Zap, Shield, Globe, CheckCircle, Star, ArrowRight, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram, ShieldCheck, HeartHandshake, Database, Calendar, Clock } from "lucide-react";
+import Footer from "@/components/footer";
 import { Header } from "@/components/ui/header-3";
 import { Switcher } from "@/components/ui/switcher";
 

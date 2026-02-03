@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { ArrowUpRight, Clock, Calendar, Share2, Bookmark, ChevronDown, ChevronRight, Menu, X, List, HelpCircle } from "lucide-react";
 import Link from "next/link";
-import { Footer } from "@/components/footer";
+import Footer from "@/components/footer";
 
 interface BlogPostProps {
   params: Promise<{

@@ -1,192 +1,228 @@
 "use client";
 
-import React from "react";
-import { ArrowUpRight, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
+import React, { useEffect, useRef } from "react";
+import Link from "next/link";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Facebook,
+  Twitter,
+  Linkedin,
+  Instagram,
+} from "lucide-react";
 
-export function Footer() {
-  const currentYear = new Date().getFullYear();
+gsap.registerPlugin(ScrollTrigger);
 
-  const footerLinks = {
-    company: [
-      { name: "About Us", href: "/about" },
-      { name: "Careers", href: "/careers" },
-      { name: "Press", href: "/press" },
-      { name: "Contact", href: "/contact" }
-    ],
-    resources: [
-      { name: "Blog", href: "/blog" },
-      { name: "Resources", href: "/resources" },
-      { name: "Case Studies", href: "/case-studies" },
-      { name: "Whitepapers", href: "/whitepapers" }
-    ],
-    solutions: [
-      { name: "HRTEQ", href: "/tech/hrteq" },
-      { name: "MARTEQ", href: "/tech/marteq" },
-      { name: "FINTEQ", href: "/tech/finteq" },
-      { name: "CXTEQ", href: "/tech/cxteq" }
-    ],
-    legal: [
-      { name: "Privacy Policy", href: "/privacy" },
-      { name: "Terms of Service", href: "/terms" },
-      { name: "Cookie Policy", href: "/cookies" },
-      { name: "GDPR", href: "/gdpr" }
-    ]
-  };
+/* ------------------ DATA ------------------ */
 
-  const socialLinks = [
-    { icon: Facebook, href: "#", label: "Facebook" },
-    { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Linkedin, href: "#", label: "LinkedIn" },
-    { icon: Instagram, href: "#", label: "Instagram" }
-  ];
+const socials = [Facebook, Twitter, Linkedin, Instagram];
+
+const companyLinks = [
+  { label: "About Us", href: "/about" },
+  { label: "Contact Us", href: "/contact" },
+  { label: "Advertise With Us", href: "/advertise-with-us" },
+  { label: "Privacy Policy", href: "/privacy-policy" },
+  { label: "GDPR", href: "/gdpr" },
+  { label: "CCPA", href: "ccpa" },
+];
+
+const solutionLinks = [
+  { label: "HRTEQ", href: "/tech/hrteq" },
+  { label: "MARTEQ", href: "/tech/marteq" },
+  { label: "FINTEQ", href: "/tech/finteq" },
+  { label: "CXTEQ", href: "/tech/cxteq" },
+];
+
+const exploreLinks = [
+  { label: "Latest", href: "/latest" },
+  { label: "Trending", href: "/trending" },
+  { label: "Reports", href: "/reports" },
+  { label: "Insights", href: "/insights" },
+];
+
+const categories = [
+  "Digital Banking",
+  "Customer Experience",
+  "Cybersecurity",
+  "Blockchain",
+  "AI & Machine Learning",
+];
+
+/* ------------------ COMPONENT ------------------ */
+
+const Footer: React.FC = () => {
+  const footerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!footerRef.current) return;
+
+    const ctx = gsap.context(() => {
+      gsap.from(".f-left", {
+        x: -50,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out",
+        scrollTrigger: { trigger: footerRef.current, start: "top 85%", once: true },
+      });
+
+      gsap.from(".f-right", {
+        x: 50,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out",
+        scrollTrigger: { trigger: footerRef.current, start: "top 85%", once: true },
+      });
+
+      gsap.from(".f-fade", {
+        y: 20,
+        opacity: 0,
+        stagger: 0.08,
+        duration: 0.6,
+        ease: "power2.out",
+        scrollTrigger: { trigger: footerRef.current, start: "top 80%", once: true },
+      });
+    }, footerRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <footer className="relative bg-white border-t border-[var(--border)]">
-      {/* Background decoration */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-32 top-0 h-[20rem] w-[20rem] rounded-full bg-[rgba(30,58,138,0.03)] blur-3xl" />
-        <div className="absolute -right-40 bottom-0 h-[25rem] w-[25rem] rounded-full bg-[rgba(30,58,138,0.02)] blur-3xl" />
-      </div>
+    <footer ref={footerRef} className="relative bg-white overflow-hidden border-t border-gray-200">
 
-      {/* Main Footer Content */}
-      <div className="relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
-            {/* Brand Section */}
-            <div className="lg:col-span-2">
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold text-[var(--primary)] mb-2">News Demand-tech</h3>
-                <p className="text-[var(--muted-foreground)] text-sm sm:text-base leading-relaxed">
-                  Signal over noise for modern B2B decision-makers. Strategy, systems, and signals across demand, CX, HR, and fintech.
-                </p>
+      {/* Accent Line */}
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-blue-600 via-blue-300 to-transparent opacity-60" />
+
+      {/* Glow */}
+      <div className="absolute -top-24 -right-24 w-72 h-72 bg-blue-600/5 rounded-full blur-3xl" />
+      <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-blue-600/5 rounded-full blur-3xl" />
+
+      <div className="relative max-w-7xl mx-auto px-6 py-14">
+
+        {/* MAIN PANEL */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 rounded-3xl border border-gray-200 bg-white/70 backdrop-blur-xl p-10">
+
+          {/* BRAND */}
+          <div className="lg:col-span-4 f-left space-y-5">
+            <h2 className="text-lg font-semibold text-gray-900">
+              News Demand-tech
+            </h2>
+
+            <p className="text-sm text-gray-600 leading-relaxed">
+              A future-ready technology publication covering HR Tech, FinTech,
+              CX, AI, and enterprise innovation.
+            </p>
+
+            <div className="space-y-2 text-sm text-gray-700">
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-blue-600" />
+                info@newsdemandtech.com
               </div>
-
-              {/* Contact Info */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-3 text-[var(--muted-foreground)]">
-                  <Mail className="w-4 h-4 text-[var(--primary)]" />
-                  <span className="text-sm">hello@news-demand-tech.com</span>
-                </div>
-                <div className="flex items-center gap-3 text-[var(--muted-foreground)]">
-                  <Phone className="w-4 h-4 text-[var(--primary)]" />
-                  <span className="text-sm">+1 (555) 123-4567</span>
-                </div>
-                <div className="flex items-center gap-3 text-[var(--muted-foreground)]">
-                  <MapPin className="w-4 h-4 text-[var(--primary)]" />
-                  <span className="text-sm">New York, NY 10001</span>
-                </div>
+              <div className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-blue-600" />
+                +1 (555) 123-4567
               </div>
-
-              {/* Social Links */}
-              <div className="flex gap-3 mt-6">
-                {socialLinks.map((social, index) => (
-                  <a
-                    key={index}
-                    href={social.href}
-                    className="w-10 h-10 rounded-full bg-[var(--primary)]/10 flex items-center justify-center text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white transition-colors"
-                    aria-label={social.label}
-                  >
-                    <social.icon className="w-5 h-5" />
-                  </a>
-                ))}
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-blue-600" />
+                San Francisco, CA
               </div>
             </div>
 
-            {/* Links Sections */}
-            <div>
-              <h4 className="font-semibold text-black mb-4">Company</h4>
-              <ul className="space-y-2">
-                {footerLinks.company.map((link, index) => (
-                  <li key={index}>
-                    <a 
-                      href={link.href}
-                      className="text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors text-sm"
-                    >
-                      {link.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-black mb-4">Resources</h4>
-              <ul className="space-y-2">
-                {footerLinks.resources.map((link, index) => (
-                  <li key={index}>
-                    <a 
-                      href={link.href}
-                      className="text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors text-sm"
-                    >
-                      {link.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-black mb-4">Solutions</h4>
-              <ul className="space-y-2">
-                {footerLinks.solutions.map((link, index) => (
-                  <li key={index}>
-                    <a 
-                      href={link.href}
-                      className="text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors text-sm"
-                    >
-                      {link.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+            <div className="flex gap-4 pt-3">
+              {socials.map((Icon, i) => (
+                <Icon
+                  key={i}
+                  className="w-4 h-4 text-gray-500 hover:text-blue-900 transition-colors cursor-pointer"
+                />
+              ))}
             </div>
           </div>
 
-          {/* Newsletter Signup */}
-          <div className="mt-12 pt-8 border-t border-[var(--border)]">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-              <div>
-                <h4 className="font-semibold text-black mb-2">Stay Updated</h4>
-                <p className="text-[var(--muted-foreground)] text-sm">
-                  Get the latest insights and trends delivered to your inbox.
-                </p>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="flex-1 px-4 py-3 rounded-full border border-[var(--border)] bg-[var(--surface)] text-black placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
-                />
-                <button className="px-6 py-3 bg-[var(--primary)] text-white rounded-full font-semibold hover:bg-[var(--primary-hover)] transition-colors">
-                  Subscribe
-                </button>
-              </div>
+          {/* NAV */}
+          <div className="lg:col-span-8 f-right grid grid-cols-2 md:grid-cols-4 gap-8">
+            <FooterColumn title="Company" links={companyLinks} />
+            <CategoryColumn />
+            <FooterColumn title="Solutions" links={solutionLinks} />
+            <FooterColumn title="Explore" links={exploreLinks} />
+          </div>
+        </div>
+
+        {/* NEWSLETTER */}
+        <div className="mt-8 rounded-2xl border border-gray-200 bg-gray-50 px-8 py-5 f-fade">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-gray-700">
+              Smart insights. Zero noise. Delivered weekly.
+            </p>
+
+            <div className="flex gap-3 w-full md:w-auto">
+              <input
+                type="email"
+                placeholder="Your email"
+                className="w-full md:w-60 px-4 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 outline-none"
+              />
+              <button className="px-5 py-2 text-sm font-semibold rounded-lg bg-blue-900 text-white hover:bg-blue-700 transition">
+                Subscribe
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Bottom Footer */}
-        <div className="border-t border-[var(--border)]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <div className="text-[var(--muted-foreground)] text-sm">
-                © {currentYear} News Demand-tech. All rights reserved.
-              </div>
-              <div className="flex flex-wrap gap-6">
-                {footerLinks.legal.map((link, index) => (
-                  <a
-                    key={index}
-                    href={link.href}
-                    className="text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors text-sm"
-                  >
-                    {link.name}
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
+        {/* BOTTOM */}
+        <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-2 f-fade">
+          <p className="text-xs text-gray-500">
+            © {new Date().getFullYear()} News Demand-tech
+          </p>
+          <p className="text-xs text-gray-400">
+            Designed for the future of digital intelligence
+          </p>
         </div>
       </div>
     </footer>
   );
+};
+
+/* ------------------ COLUMNS ------------------ */
+
+interface FooterColumnProps {
+  title: string;
+  links: { label: string; href: string }[];
 }
+
+const FooterColumn: React.FC<FooterColumnProps> = ({ title, links }) => (
+  <div className="space-y-3">
+    <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-900">
+      {title}
+    </h4>
+    <ul className="space-y-2 text-sm text-gray-600">
+      {links.map((link) => (
+        <li key={link.href}>
+          <Link
+            href={link.href}
+            className="hover:text-blue-600 transition-colors"
+          >
+            {link.label}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
+const CategoryColumn: React.FC = () => (
+  <div className="space-y-3">
+    <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-900">
+      Topics
+    </h4>
+    <ul className="space-y-2 text-sm text-gray-600">
+      {categories.map((item) => (
+        <li key={item} className="opacity-70 cursor-default">
+          {item}
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
+export default Footer;
