@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -13,8 +13,10 @@ interface CompactGoogleBannerProps {
 
 export function CompactGoogleBanner({ className = "" }: CompactGoogleBannerProps) {
   const bannerRef = useRef<HTMLDivElement>(null);
+  const bannerCardRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const bannerSize = useElementSize(bannerCardRef);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -85,7 +87,7 @@ export function CompactGoogleBanner({ className = "" }: CompactGoogleBannerProps
   return (
     <div ref={bannerRef} className={`relative w-full overflow-hidden ${className}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 py-4 sm:py-6">
-        <div className="relative overflow-hidden rounded-2xl shadow-2xl border border-blue-400/20">
+        <div ref={bannerCardRef} className="relative overflow-hidden rounded-2xl shadow-2xl border border-blue-400/20">
           {/* Modern gradient background */}
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600" />
           <div className="absolute inset-0 bg-gradient-to-br from-blue-700/80 via-blue-600/70 to-indigo-700/80" />
@@ -156,6 +158,10 @@ export function CompactGoogleBanner({ className = "" }: CompactGoogleBannerProps
             </div>
           </div>
 
+          <div className="absolute top-3 right-3 z-20 rounded-full bg-black/60 backdrop-blur px-3 py-1 text-xs font-semibold text-white">
+            {bannerSize.w}×{bannerSize.h}px
+          </div>
+
           {/* Decorative elements */}
           <div className="absolute top-2 right-2 w-2 h-2 bg-white/40 rounded-full animate-pulse" />
           <div className="absolute bottom-2 left-2 w-2 h-2 bg-white/30 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }} />
@@ -166,4 +172,31 @@ export function CompactGoogleBanner({ className = "" }: CompactGoogleBannerProps
       </div>
     </div>
   );
+}
+
+function useElementSize(ref: React.RefObject<HTMLElement | null>) {
+  const [size, setSize] = useState({ w: 0, h: 0 });
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const update = () => {
+      const rect = el.getBoundingClientRect();
+      setSize({ w: Math.round(rect.width), h: Math.round(rect.height) });
+    };
+
+    update();
+
+    const ro = new ResizeObserver(() => update());
+    ro.observe(el);
+
+    window.addEventListener("resize", update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", update);
+    };
+  }, [ref]);
+
+  return size;
 }

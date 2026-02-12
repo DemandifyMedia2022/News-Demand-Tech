@@ -99,23 +99,23 @@ const Footer: React.FC = () => {
       <div className="absolute -top-24 -right-24 w-72 h-72 bg-blue-600/5 rounded-full blur-3xl" />
       <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-blue-600/5 rounded-full blur-3xl" />
 
-      <div className="relative max-w-7xl mx-auto px-6 py-14">
+      <div className="relative max-w-8xl mx-auto px-3 py-7">
 
         {/* MAIN PANEL */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 rounded-3xl border border-gray-200 bg-white/70 backdrop-blur-xl p-10">
 
           {/* BRAND */}
-          <div className="lg:col-span-4 f-left space-y-5">
-            <h2 className="text-lg font-semibold text-gray-900">
+          <div className="lg:col-span-4 f-left space-y-3">
+            <h2 className="text-xl font-semibold text-gray-900">
               News Demand-tech
             </h2>
 
-            <p className="text-sm text-gray-600 leading-relaxed">
+            <p className="text-md text-gray-600 leading-relaxed">
               A future-ready technology publication covering HR Tech, FinTech,
               CX, AI, and enterprise innovation.
             </p>
 
-            <div className="space-y-2 text-sm text-gray-700">
+            <div className="space-y-2 text-md text-gray-700">
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-blue-600" />
                 info@newsdemandtech.com
@@ -152,7 +152,7 @@ const Footer: React.FC = () => {
         {/* NEWSLETTER */}
         <div className="mt-8 rounded-2xl border border-gray-200 bg-gray-50 px-8 py-5 f-fade">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-gray-700">
+            <p className="text-md text-gray-700">
               Smart insights. Zero noise. Delivered weekly.
             </p>
 
@@ -160,9 +160,9 @@ const Footer: React.FC = () => {
               <input
                 type="email"
                 placeholder="Your email"
-                className="w-full md:w-60 px-4 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 outline-none"
+                className="w-full md:w-60 px-4 py-2 text-md rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 outline-none"
               />
-              <button className="px-5 py-2 text-sm font-semibold rounded-lg bg-blue-900 text-white hover:bg-blue-700 transition">
+              <button className="px-5 py-2 text-md font-semibold rounded-lg bg-blue-900 text-white hover:bg-blue-700 transition">
                 Subscribe
               </button>
             </div>
@@ -170,11 +170,11 @@ const Footer: React.FC = () => {
         </div>
 
         {/* BOTTOM */}
-        <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-2 f-fade">
-          <p className="text-xs text-gray-500">
+        <div className="mt-3 flex flex-col md:flex-row justify-between items-center gap-2 f-fade">
+          <p className="text-sm text-gray-500">
             © {new Date().getFullYear()} News Demand-tech
           </p>
-          <p className="text-xs text-gray-400">
+          <p className="text-sm text-gray-400">
             Designed for the future of digital intelligence
           </p>
         </div>
@@ -192,10 +192,10 @@ interface FooterColumnProps {
 
 const FooterColumn: React.FC<FooterColumnProps> = ({ title, links }) => (
   <div className="space-y-3">
-    <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-900">
+    <h4 className="text-xl font-semibold uppercase tracking-wider text-blue-900">
       {title}
     </h4>
-    <ul className="space-y-2 text-sm text-gray-600">
+    <ul className="space-y-2 text-lg text-gray-600">
       {links.map((link) => (
         <li key={link.href}>
           <Link
@@ -212,10 +212,10 @@ const FooterColumn: React.FC<FooterColumnProps> = ({ title, links }) => (
 
 const CategoryColumn: React.FC = () => (
   <div className="space-y-3">
-    <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-900">
+    <h4 className="text-xl font-semibold uppercase tracking-wider text-gray-900">
       Topics
     </h4>
-    <ul className="space-y-2 text-sm text-gray-600">
+    <ul className="space-y-2 text-lg text-gray-900">
       {categories.map((item) => (
         <li key={item} className="opacity-70 cursor-default">
           {item}

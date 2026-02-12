@@ -1,80 +1,59 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Users, MessageSquare, TrendingUp, Headphones, Zap, Shield, Globe, CheckCircle, Star, ArrowRight, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram, ShieldCheck, HeartHandshake, Database, Calendar, Clock } from "lucide-react";
 import Footer from "@/components/footer";
 import { Header } from "@/components/ui/header-3";
 import { Switcher } from "@/components/ui/switcher";
+import { CmsBlog } from "@/lib/types";
 
-const CXTEQ_ARTICLES = [
-  {
-    id: "1",
-    title: "Customer Experience Platforms: The Complete Guide",
-    excerpt: "How modern CX platforms are transforming customer interactions and driving business growth in 2026.",
-    category: "CX Automation",
-    image: "https://images.unsplash.com/photo-1556155092-490a1ba16284?auto=format&fit=crop&w=1600&q=80",
-    readTime: "8 min",
-    date: "Jan 28, 2026",
-    author: "Sophia Martinez",
-    featured: true
-  },
-  {
-    id: "2",
-    title: "AI-Powered Customer Service: Chatbots and Beyond",
-    excerpt: "Advanced AI solutions revolutionizing customer support and engagement across all touchpoints.",
-    category: "CX Automation",
-    image: "https://images.unsplash.com/photo-1531297483762-372d3692f4ea?auto=format&fit=crop&w=1600&q=80",
-    readTime: "6 min",
-    date: "Jan 26, 2026",
-    author: "James Wilson",
-    featured: false
-  },
-  {
-    id: "3",
-    title: "Customer Journey Mapping: Data-Driven Insights",
-    excerpt: "Using analytics and AI to understand and optimize every customer touchpoint for maximum satisfaction.",
-    category: "Customer Journey",
-    image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1600&q=80",
-    readTime: "10 min",
-    date: "Jan 24, 2026",
-    author: "Emily Chen",
-    featured: false
-  },
-  {
-    id: "4",
-    title: "Omnichannel Customer Experience: Seamless Integration",
-    excerpt: "Creating consistent, personalized experiences across all customer channels and devices.",
-    category: "Customer Journey",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1600&q=80",
-    readTime: "7 min",
-    date: "Jan 22, 2026",
-    author: "Michael Brown",
-    featured: false
-  },
-  {
-    id: "5",
-    title: "CDP: The Engine of Personalized Customer Interaction",
-    excerpt: "How Customer Data Platforms are enabling hyper-personalization at scale for B2B brands.",
-    category: "Customer Data Platform",
-    image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1600&q=80",
-    readTime: "9 min",
-    date: "Jan 20, 2026",
-    author: "Lisa Anderson",
-    featured: false
-  }
-];
-
-const CATEGORIES = ["All", "CX Automation", "Customer Journey", "Customer Data Platform"];
+const CATEGORIES = ["All", "CX Automation", "Customer Journey", "Customer Data Platforms"];
 
 export default function CXTEQPage() {
   const [activeCategory, setActiveCategory] = useState("All");
+  const [articles, setArticles] = useState<CmsBlog[]>([]);
+  const [isLoadingArticles, setIsLoadingArticles] = useState(false);
   const unoptimized = process.env.NODE_ENV === "development";
 
-  const filteredArticles = activeCategory === "All"
-    ? CXTEQ_ARTICLES
-    : CXTEQ_ARTICLES.filter(article => article.category === activeCategory);
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setIsLoadingArticles(true);
+      try {
+        const params = new URLSearchParams({
+          type: "blog",
+          limit: "60",
+          offset: "0",
+          category: "CXTeq",
+          published: "true",
+        });
+        if (activeCategory !== "All") params.set("subcategory", activeCategory);
+
+        const res = await fetch(`/api/cms/query?${params.toString()}`, { cache: "no-store" });
+        if (!res.ok) throw new Error(`Failed to load articles (${res.status})`);
+        const data = await res.json();
+        const result = Array.isArray(data?.result) ? (data.result as CmsBlog[]) : [];
+        if (!cancelled) setArticles(result);
+      } catch {
+        if (!cancelled) setArticles([]);
+      } finally {
+        if (!cancelled) setIsLoadingArticles(false);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [activeCategory]);
+
+  const filteredArticles = useMemo(() => {
+    if (activeCategory === "All") return articles;
+    return articles.filter((article) => (article?.subcategory || "") === activeCategory || (article?.subcategories || []).includes(activeCategory));
+  }, [activeCategory, articles]);
 
   return (
     <>
@@ -158,27 +137,31 @@ export default function CXTEQPage() {
 
           {/* Content Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-            {filteredArticles.map((article) => (
-              <div key={article.id} className="group bg-white rounded-2xl border border-gray-50 p-3 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(37,99,235,0.08)] hover:translate-y-[-4px]">
+            {filteredArticles.map((article, index) => (
+              <Link
+                key={article.slug || article._id || String(index)}
+                href={`/blog/${article.slug || article._id}`}
+                className="group bg-white rounded-2xl border border-gray-50 p-3 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(37,99,235,0.08)] hover:translate-y-[-4px] block"
+              >
                 <div className="relative aspect-[16/10] overflow-hidden rounded-xl mb-4 shadow-sm">
                   <Image
-                    src={article.image}
-                    alt={article.title}
+                    src={article.image || "https://images.unsplash.com/photo-1556155092-490a1ba16284?auto=format&fit=crop&w=1600&q=80"}
+                    alt={article.title || "Blog"}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
                     unoptimized={unoptimized}
                   />
                   <div className="absolute top-2 left-2">
                     <span className="px-2 py-1 bg-white/95 backdrop-blur-sm text-[#1e3a8a] text-[9px] font-bold uppercase rounded shadow-lg tracking-wider">
-                      {article.category}
+                      {article.subcategory || (article.subcategories || [])[0] || ""}
                     </span>
                   </div>
                 </div>
 
                 <div className="px-2">
                   <div className="flex items-center gap-3 text-gray-400 text-[10px] mb-2 font-bold tracking-widest uppercase">
-                    <span className="flex items-center gap-1"><Calendar size={12} /> {article.date}</span>
-                    <span className="flex items-center gap-1"><Clock size={12} /> {article.readTime}</span>
+                    <span className="flex items-center gap-1"><Calendar size={12} /> {article.publishDate || ""}</span>
+                    <span className="flex items-center gap-1"><Clock size={12} /> {article.readTime || ""}</span>
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
                     {article.title}
@@ -189,9 +172,9 @@ export default function CXTEQPage() {
                   <div className="flex items-center justify-between pt-4 border-t border-gray-50">
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 rounded-full bg-blue-50 overflow-hidden relative">
-                        <Image src="https://i.pravatar.cc/150?u=cx" alt={article.author} fill className="object-cover" unoptimized={unoptimized} />
+                        <Image src="https://i.pravatar.cc/150?u=cx" alt={article.author || "Author"} fill className="object-cover" unoptimized={unoptimized} />
                       </div>
-                      <span className="text-[10px] font-bold text-gray-400 uppercase">{article.author}</span>
+                      <span className="text-[10px] font-bold text-gray-400 uppercase">{article.author || ""}</span>
                     </div>
                     <button className="inline-flex items-center gap-1 text-blue-600 font-bold text-[11px] group/btn">
                       Deep Dive
@@ -199,8 +182,13 @@ export default function CXTEQPage() {
                     </button>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
+            {!isLoadingArticles && filteredArticles.length === 0 && (
+              <div className="col-span-full text-center text-sm text-gray-500">
+                No posts found.
+              </div>
+            )}
           </div>
 
           {/* Ad Space Section */}

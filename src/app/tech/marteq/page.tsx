@@ -1,79 +1,60 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowUpRight, Calendar, Clock, TrendingUp, Target, Zap, BarChart, Megaphone, Mail, LineChart, Users2, Rocket } from "lucide-react";
-import { Footer } from "@/components/footer";
+import Footer from "@/components/footer";
 import { Header } from "@/components/ui/header-3";
 import { Switcher } from "@/components/ui/switcher";
-
-const MARTEQ_ARTICLES = [
-  {
-    id: "1",
-    title: "Marketing Automation 2026: The AI Revolution",
-    excerpt: "How artificial intelligence is transforming marketing automation and personalization at scale.",
-    category: "Automation",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1600&q=80",
-    readTime: "8 min",
-    date: "Jan 28, 2026",
-    author: "Alex Thompson",
-    featured: true
-  },
-  {
-    id: "2",
-    title: "Content Intelligence: Data-Driven Storytelling",
-    excerpt: "Leveraging AI and analytics to create compelling content that drives engagement and conversions.",
-    category: "Strategy",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1600&q=80",
-    readTime: "6 min",
-    date: "Jan 26, 2026",
-    author: "Rachel Green", 
-    featured: false
-  },
-  {
-    id: "3",
-    title: "Customer Journey Orchestration: Beyond Funnels",
-    excerpt: "Modern approaches to mapping and optimizing customer journeys across multiple touchpoints.",
-    category: "Automation",
-    image: "https://images.unsplash.com/photo-1556155092-490a1ba16284?auto=format&fit=crop&w=1600&q=80",
-    readTime: "10 min",
-    date: "Jan 24, 2026",
-    author: "Mark Davis",
-    featured: false
-  },
-  {
-    id: "4",
-    title: "Marketing Analytics: Metrics That Matter",
-    excerpt: "Moving beyond vanity metrics to analytics that drive real business growth and ROI.",
-    category: "Analytics",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1600&q=80",
-    readTime: "7 min",
-    date: "Jan 22, 2026",
-    author: "Lisa Chen",
-    featured: false
-  },
-  {
-    id: "5",
-    title: "Account-Based Marketing 2.0: Precision Targeting",
-    excerpt: "Advanced ABM strategies and technologies for B2B marketing success in 2026.",
-    category: "ABM",
-    image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1600&q=80",
-    readTime: "9 min",
-    date: "Jan 20, 2026",
-    author: "Tom Wilson",
-    featured: false
-  }
-];
+import { CmsBlog } from "@/lib/types";
 
 const CATEGORIES = ["All", "Automation", "Strategy", "Analytics", "ABM"];
 
 export default function MARTEQPage() {
   const [activeCategory, setActiveCategory] = useState("All");
+  const [articles, setArticles] = useState<CmsBlog[]>([]);
+  const [isLoadingArticles, setIsLoadingArticles] = useState(false);
   const unoptimized = process.env.NODE_ENV === "development";
 
-  const filteredArticles = activeCategory === "All"
-    ? MARTEQ_ARTICLES
-    : MARTEQ_ARTICLES.filter(article => article.category === activeCategory);
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setIsLoadingArticles(true);
+      try {
+        const params = new URLSearchParams({
+          type: "blog",
+          limit: "60",
+          offset: "0",
+          category: "MarTeq",
+          published: "true",
+        });
+        if (activeCategory !== "All") params.set("subcategory", activeCategory);
+
+        const res = await fetch(`/api/cms/query?${params.toString()}`, { cache: "no-store" });
+        if (!res.ok) throw new Error(`Failed to load articles (${res.status})`);
+        const data = await res.json();
+        const result = Array.isArray(data?.result) ? (data.result as CmsBlog[]) : [];
+        if (!cancelled) setArticles(result);
+      } catch {
+        if (!cancelled) setArticles([]);
+      } finally {
+        if (!cancelled) setIsLoadingArticles(false);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [activeCategory]);
+
+  const featuredArticle = useMemo(() => articles[0], [articles]);
+  const filteredArticles = useMemo(() => {
+    if (activeCategory === "All") return articles;
+    return articles.filter((article) => (article?.subcategory || "") === activeCategory || (article?.subcategories || []).includes(activeCategory));
+  }, [activeCategory, articles]);
 
   return (
     <>
@@ -136,12 +117,15 @@ export default function MARTEQPage() {
           </div>
 
           {/* Featured Article */}
-          {activeCategory === "All" && (
-            <div className="group relative mb-16 overflow-hidden rounded-2xl bg-gray-50 border border-gray-100 p-3 md:p-6 flex flex-col lg:flex-row gap-8 transition-all hover:shadow-xl">
+          {activeCategory === "All" && featuredArticle && (
+            <Link
+              href={`/blog/${featuredArticle.slug || featuredArticle._id}`}
+              className="group relative mb-16 overflow-hidden rounded-2xl bg-gray-50 border border-gray-100 p-3 md:p-6 flex flex-col lg:flex-row gap-8 transition-all hover:shadow-xl block"
+            >
               <div className="relative lg:w-1/2 aspect-[16/9] lg:aspect-auto overflow-hidden rounded-xl">
                 <Image
-                  src={MARTEQ_ARTICLES[0].image}
-                  alt={MARTEQ_ARTICLES[0].title}
+                  src={featuredArticle.image || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1600&q=80"}
+                  alt={featuredArticle.title || "Featured"}
                   fill
                   className="object-cover transition-transform duration-1000 group-hover:scale-105"
                   unoptimized={unoptimized}
@@ -154,45 +138,49 @@ export default function MARTEQPage() {
               </div>
               <div className="lg:w-1/2 flex flex-col justify-center py-4 px-2">
                 <div className="flex items-center gap-3 text-indigo-600 font-black text-[10px] mb-4 uppercase tracking-widest">
-                  <span>{MARTEQ_ARTICLES[0].category}</span>
+                  <span>{featuredArticle.subcategory || (featuredArticle.subcategories || [])[0] || ""}</span>
                   <span className="w-1 h-1 rounded-full bg-indigo-200" />
-                  <span>{MARTEQ_ARTICLES[0].readTime}</span>
+                  <span>{featuredArticle.readTime || ""}</span>
                 </div>
                 <h2 className="text-2xl md:text-3xl font-black text-gray-900 mb-6 leading-tight">
-                  {MARTEQ_ARTICLES[0].title}
+                  {featuredArticle.title}
                 </h2>
                 <p className="text-gray-400 text-sm leading-relaxed mb-8 uppercase line-clamp-2">
-                  {MARTEQ_ARTICLES[0].excerpt}
+                  {featuredArticle.excerpt}
                 </p>
                 <button className="flex items-center gap-2 text-indigo-600 font-black text-base transition-all hover:gap-4 group/btn">
                   START READING
                   <ArrowUpRight size={20} className="transition-transform group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1" />
                 </button>
               </div>
-            </div>
+            </Link>
           )}
 
           {/* Grid articles */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-20">
-            {filteredArticles.filter(a => activeCategory !== "All" || !a.featured).map((article) => (
-              <div key={article.id} className="group flex flex-col">
+            {filteredArticles.filter((a) => activeCategory !== "All" || a !== featuredArticle).map((article, index) => (
+              <Link
+                key={article.slug || article._id || String(index)}
+                href={`/blog/${article.slug || article._id}`}
+                className="group flex flex-col"
+              >
                 <div className="relative aspect-[16/10] overflow-hidden rounded-2xl mb-4 bg-gray-100 shadow-sm border border-gray-100 transition-all group-hover:shadow-[0_20px_40px_rgba(79,70,229,0.1)] group-hover:translate-y-[-4px]">
                   <Image
-                    src={article.image}
-                    alt={article.title}
+                    src={article.image || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1600&q=80"}
+                    alt={article.title || "Blog"}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
                     unoptimized={unoptimized}
                   />
                   <div className="absolute top-2 left-2">
                     <span className="px-3 py-1 bg-white/95 backdrop-blur-sm text-indigo-600 text-[8px] font-black uppercase rounded shadow-lg">
-                      {article.category}
+                      {article.subcategory || (article.subcategories || [])[0] || ""}
                     </span>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 text-gray-400 text-[9px] font-black mb-2 tracking-widest uppercase">
-                  <span className="flex items-center gap-1"><Calendar size={10} /> {article.date}</span>
-                  <span className="flex items-center gap-1"><Clock size={10} /> {article.readTime}</span>
+                  <span className="flex items-center gap-1"><Calendar size={10} /> {article.publishDate || ""}</span>
+                  <span className="flex items-center gap-1"><Clock size={10} /> {article.readTime || ""}</span>
                 </div>
                 <h3 className="text-xl font-black text-gray-900 mb-3 leading-snug group-hover:text-indigo-600 transition-colors">
                   {article.title}
@@ -201,13 +189,18 @@ export default function MARTEQPage() {
                   {article.excerpt}
                 </p>
                 <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
-                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{article.author}</span>
+                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{article.author || ""}</span>
                   <button className="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center text-gray-900 group-hover:bg-indigo-600 group-hover:text-white transition-all">
                     <ArrowUpRight size={16} />
                   </button>
                 </div>
-              </div>
+              </Link>
             ))}
+            {!isLoadingArticles && filteredArticles.length === 0 && (
+              <div className="col-span-full text-center text-sm text-gray-500">
+                No posts found.
+              </div>
+            )}
           </div>
 
           {/* Marketing CTA Section */}

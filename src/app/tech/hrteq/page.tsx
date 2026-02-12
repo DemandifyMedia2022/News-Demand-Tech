@@ -1,176 +1,41 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Users, TrendingUp, BarChart3, Target, Zap, Shield, Globe, CheckCircle, Star, ArrowRight, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram, Briefcase, Brain, Heart, Plus, Clock } from "lucide-react";
 import Footer from "@/components/footer";
+import { CmsBlog } from "@/lib/types";
 
 const HR_CATEGORIES = [
   {
-    id: "recruitment",
+    id: "Recruitment & Staff Augmentation",
     title: "Recruitment & Staff Augmentation",
     icon: <Users className="w-5 h-5" />
   },
   {
-    id: "payroll",
+    id: "Payroll management",
     title: "Payroll management",
     icon: <Briefcase className="w-5 h-5" />
   },
   {
-    id: "learning",
+    id: "Learning & Development",
     title: "Learning & Development",
     icon: <Brain className="w-5 h-5" />
   },
   {
-    id: "hrms",
+    id: "HRMS",
     title: "HRMS",
     icon: <Target className="w-5 h-5" />
   },
   {
-    id: "hcm",
+    id: "HCM",
     title: "HCM",
     icon: <Heart className="w-5 h-5" />
   }
 ];
 
-interface Story {
-  id: string;
-  title: string;
-  excerpt: string;
-  image: string;
-  readTime: string;
-  date: string;
-}
-
-interface StoriesData {
-  [key: string]: Story[];
-}
-
-const STORIES_DATA: StoriesData = {
-  recruitment: [
-    {
-      id: "1",
-      title: "Modern Recruitment Strategies",
-      excerpt: "Discover how leading companies are transforming their hiring processes with data-driven approaches and AI-powered tools.",
-      image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=800&q=80",
-      readTime: "5 min read",
-      date: "2024-01-15"
-    },
-    {
-      id: "2",
-      title: "AI in Hiring Process",
-      excerpt: "Explore the impact of artificial intelligence on recruitment efficiency and candidate experience optimization.",
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80",
-      readTime: "7 min read",
-      date: "2024-01-12"
-    },
-    {
-      id: "3",
-      title: "Candidate Experience Matters",
-      excerpt: "Why creating a positive candidate journey is crucial for employer branding and talent acquisition success.",
-      image: "https://images.unsplash.com/photo-1517048678631-a9a63c065ed4?auto=format&fit=crop&w=800&q=80",
-      readTime: "4 min read",
-      date: "2024-01-10"
-    },
-    {
-      id: "4",
-      title: "Talent Sourcing Automation",
-      excerpt: "Leverage automated tools to identify and engage top talent across multiple platforms efficiently.",
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80",
-      readTime: "6 min read",
-      date: "2024-01-08"
-    },
-    {
-      id: "5",
-      title: "Diversity in Tech Hiring",
-      excerpt: "Building inclusive recruitment strategies that promote diversity and eliminate bias in hiring processes.",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80",
-      readTime: "8 min read",
-      date: "2024-01-05"
-    }
-  ],
-  payroll: [
-    {
-      id: "6",
-      title: "Automated Payroll Solutions",
-      excerpt: "Streamline your payroll processing with automated systems that ensure accuracy and compliance.",
-      image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=80",
-      readTime: "6 min read",
-      date: "2024-01-14"
-    },
-    {
-      id: "7",
-      title: "Global Payroll Management",
-      excerpt: "Managing multi-country payroll operations with unified platforms and local compliance expertise.",
-      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=80",
-      readTime: "8 min read",
-      date: "2024-01-11"
-    },
-    {
-      id: "8",
-      title: "Payroll Analytics Insights",
-      excerpt: "Data-driven approaches to optimize payroll costs and improve financial forecasting accuracy.",
-      image: "https://images.unsplash.com/photo-1554469384-e58e1667c60f?auto=format&fit=crop&w=800&q=80",
-      readTime: "5 min read",
-      date: "2024-01-09"
-    }
-  ],
-  learning: [
-    {
-      id: "9",
-      title: "Personalized Learning Paths",
-      excerpt: "Create tailored development programs that adapt to individual employee needs and career goals.",
-      image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80",
-      readTime: "5 min read",
-      date: "2024-01-13"
-    },
-    {
-      id: "10",
-      title: "Skills Gap Analysis",
-      excerpt: "Identify and address critical skill gaps within your organization through comprehensive assessment tools.",
-      image: "https://images.unsplash.com/photo-1515378791036-0648a3e77fb8?auto=format&fit=crop&w=800&q=80",
-      readTime: "7 min read",
-      date: "2024-01-11"
-    }
-  ],
-  hrms: [
-    {
-      id: "11",
-      title: "Integrated HRMS Platforms",
-      excerpt: "Comprehensive human resource management systems that unify all HR functions in one place.",
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80",
-      readTime: "7 min read",
-      date: "2024-01-09"
-    },
-    {
-      id: "12",
-      title: "Cloud-Based HR Solutions",
-      excerpt: "Benefits of migrating HR systems to cloud infrastructure for enhanced accessibility and scalability.",
-      image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80",
-      readTime: "6 min read",
-      date: "2024-01-07"
-    }
-  ],
-  hcm: [
-    {
-      id: "13",
-      title: "Strategic HCM Solutions",
-      excerpt: "Human capital management tools that align workforce strategy with business objectives.",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80",
-      readTime: "6 min read",
-      date: "2024-01-08"
-    },
-    {
-      id: "14",
-      title: "Employee Engagement Platforms",
-      excerpt: "Digital solutions to measure and improve employee satisfaction and organizational culture.",
-      image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=800&q=80",
-      readTime: "5 min read",
-      date: "2024-01-06"
-    }
-  ]
-};
+type Story = CmsBlog;
 
 const HR_FEATURES = [
   {
@@ -192,18 +57,51 @@ const HR_FEATURES = [
 ];
 
 export default function HRTEQPage() {
-  const [selectedCategory, setSelectedCategory] = useState("recruitment");
+  const [selectedCategory, setSelectedCategory] = useState("Recruitment & Staff Augmentation");
   const [showMoreBlogs, setShowMoreBlogs] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  const [stories, setStories] = useState<Story[]>([]);
+  const [isLoadingStories, setIsLoadingStories] = useState(false);
   const unoptimized = process.env.NODE_ENV === "development";
+  const leftBannerRef = useRef<HTMLDivElement | null>(null);
+  const analyticsBannerRef = useRef<HTMLDivElement | null>(null);
+  const leftBannerSize = useElementSize(leftBannerRef);
+  const analyticsBannerSize = useElementSize(analyticsBannerRef);
 
   useEffect(() => {
-    setIsVisible(true);
-  }, []);
+    let cancelled = false;
+
+    async function load() {
+      setIsLoadingStories(true);
+      try {
+        const params = new URLSearchParams({
+          type: "blog",
+          limit: "50",
+          offset: "0",
+          category: "HRTeq",
+          subcategory: selectedCategory,
+          published: "true",
+        });
+        const res = await fetch(`/api/cms/query?${params.toString()}`, { cache: "no-store" });
+        if (!res.ok) throw new Error(`Failed to load stories (${res.status})`);
+        const data = await res.json();
+        const result = Array.isArray(data?.result) ? data.result : [];
+        if (!cancelled) setStories(result);
+      } catch {
+        if (!cancelled) setStories([]);
+      } finally {
+        if (!cancelled) setIsLoadingStories(false);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedCategory]);
 
   return (
     <>
-      <main className="min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+      <main className="min-h-screen mt-16" style={{ backgroundColor: 'var(--background)' }}>
         {/* Hero Section */}
         <section className="relative overflow-hidden">
           {/* Background Orbs */}
@@ -216,13 +114,6 @@ export default function HRTEQPage() {
               {/* Left Content */}
               <div className="lg:col-span-3">
                 <div className="mb-6">
-                  <div className="inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] text-white px-4 py-2 mb-6 shadow-lg">
-                    <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                    <span className="text-sm font-bold uppercase tracking-wider">
-                      HRTEQ
-                    </span>
-                  </div>
-                  
                   <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-tight mt-5">
                     <span className="bg-gradient-to-r from-[var(--foreground)] via-[var(--primary)] to-[var(--accent)] bg-clip-text text-transparent">
                       Next-Generation HR
@@ -245,32 +136,47 @@ export default function HRTEQPage() {
                     <div key={index} className="group relative">
                       <div className="absolute -inset-1 bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] rounded-xl opacity-0 group-hover:opacity-15 transition-opacity duration-300 blur-lg"></div>
                       <div className="relative bg-white rounded-xl p-4 border border-[var(--border)] shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
-                        <div className="w-10 h-10 bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] rounded-lg flex items-center justify-center text-white mb-3 group-hover:scale-110 transition-transform">
+                        <div className="w-5 h-5 bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] rounded-lg flex items-center justify-center text-white mb-3 group-hover:scale-110 transition-transform">
                           {index === 0 && <Users className="w-5 h-5" />}
                           {index === 1 && <Briefcase className="w-5 h-5" />}
                           {index === 2 && <Brain className="w-5 h-5" />}
                           {index === 3 && <Target className="w-5 h-5" />}
                         </div>
-                        <h3 className="text-sm font-bold mb-2" style={{ color: 'var(--foreground)' }}>
+                        <h3 className="text-md font-bold mb-2" style={{ color: 'var(--foreground)' }}>
                           {feature.title}
                         </h3>
-                        <p className="text-xs leading-relaxed line-clamp-2" style={{ color: 'var(--muted-foreground)' }}>
+                        <p className="text-md leading-relaxed line-clamp-2" style={{ color: 'var(--muted-foreground)' }}>
                           {feature.description}
                         </p>
                       </div>
                     </div>
                   ))}
                 </div>
+
+                <div className="hidden lg:block mt-6">
+                  <div ref={leftBannerRef} className="relative w-full h-56 xl:h-64 rounded-2xl overflow-hidden shadow-lg border border-[var(--border)]">
+                    <Image
+                      src="/img/tech-banner.webp"
+                      alt="HR Technology Banner"
+                      fill
+                      className="object-cover"
+                      unoptimized={unoptimized}
+                    />
+                    <div className="absolute top-3 right-3 z-10 rounded-full bg-black/60 backdrop-blur px-3 py-1 text-xs font-semibold text-white">
+                      {leftBannerSize.w}×{leftBannerSize.h}px
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Right Banner - Enhanced Attractive UI */}
-              <div className="lg:col-span-2 mt-20">
+              <div className="lg:col-span-2 mt-6 lg:mt-5">
                 <div className="space-y-6">
                   {/* Main Analytics Card */}
                   <div className="relative group">
                     <div className="absolute -inset-1 bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] rounded-2xl opacity-25 group-hover:opacity-35 transition-opacity duration-300 blur-xl"></div>
                     <div className="relative bg-white rounded-2xl overflow-hidden shadow-xl border border-[var(--border)]">
-                      <div className="relative h-84 overflow-hidden">
+                      <div ref={analyticsBannerRef} className="relative h-72 md:h-80 overflow-hidden">
                         <Image
                           src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80"
                           alt="HR Technology Analytics"
@@ -278,6 +184,9 @@ export default function HRTEQPage() {
                           className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
                           unoptimized={unoptimized}
                         />
+                        <div className="absolute top-3 right-3 z-10 rounded-full bg-black/60 backdrop-blur px-3 py-1 text-xs font-semibold text-white">
+                          {analyticsBannerSize.w}×{analyticsBannerSize.h}px
+                        </div>
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                         
                         {/* Enhanced Floating Content Overlay */}
@@ -377,11 +286,9 @@ export default function HRTEQPage() {
           <div className="max-w-7xl mx-auto">
             <div className="mb-8">
               <div className="max-w-4xl">
-                <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gradient leading-tight">
+                <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gradient leading-tight mt-[-50px]">
                   Neural Command Interface
-                  <br />
-                  <span className="text-lg md:text-xl font-light opacity-70">Advanced HR Analytics & Control Systems</span>
-                </h2>
+               </h2>
                 <div className="w-24 h-1 rounded-full" style={{ backgroundColor: 'var(--primary)' }}></div>
               </div>
             </div>
@@ -398,16 +305,16 @@ export default function HRTEQPage() {
                       <button
                         key={category.id}
                         onClick={() => setSelectedCategory(category.id)}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all duration-300 ${
+                        className={`w-full text-left px-3 py-2 rounded-lg text-md font-medium flex items-center gap-2 transition-all duration-300 ${
                           selectedCategory === category.id
-                            ? "bg-[var(--primary)] text-white shadow-lg"
+                            ? "bg-[var(--primary)] text-white shadow-md"
                             : "hover:bg-[var(--surface-2)]"
                         }`}
                         style={{
                           color: selectedCategory === category.id ? '#ffffff' : 'var(--muted-foreground)'
                         }}
                       >
-                        <div className="w-4 h-4 flex items-center justify-center">
+                        <div className="w-3 h-3 flex items-center justify-center">
                           {category.icon}
                         </div>
                         {category.title}
@@ -437,12 +344,12 @@ export default function HRTEQPage() {
                   
                   {/* Blog Cards - Vertical 2-Column Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {STORIES_DATA[selectedCategory]?.slice(0, showMoreBlogs ? undefined : 4).map((story: Story, index: number) => (
-                      <article key={story.id} className="group bg-white rounded-xl border border-[var(--border)] shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+                    {stories.slice(0, showMoreBlogs ? undefined : 4).map((story: Story, index: number) => (
+                      <article key={story.slug || story._id || String(index)} className="group bg-white rounded-xl border border-[var(--border)] shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
                         <div className="relative h-48">
                           <Image
-                            src={story.image}
-                            alt={story.title}
+                            src={story.image || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80"}
+                            alt={story.title || "Blog"}
                             fill
                             className="object-cover group-hover:scale-110 transition-transform duration-500"
                             unoptimized={unoptimized}
@@ -452,7 +359,7 @@ export default function HRTEQPage() {
                           {/* Category Badge */}
                           <div className="absolute top-4 left-4">
                             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-white/90 backdrop-blur-sm" style={{ color: 'var(--primary)' }}>
-                              {selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
+                              {selectedCategory}
                             </span>
                           </div>
                         </div>
@@ -468,12 +375,12 @@ export default function HRTEQPage() {
                             <div className="flex items-center gap-4 text-xs" style={{ color: 'var(--muted-foreground)' }}>
                               <span className="flex items-center gap-1">
                                 <Clock className="w-3 h-3" />
-                                {story.readTime}
+                                {story.readTime || ""}
                               </span>
-                              <span>{story.date}</span>
+                              <span>{story.publishDate || ""}</span>
                             </div>
                             <Link 
-                              href={`/blog/${story.id}`}
+                              href={`/blog/${story.slug || story._id}`}
                               className="inline-flex items-center gap-1 px-4 py-2 bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] text-white text-xs font-medium rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105"
                               style={{ color: 'white' }}
                             >
@@ -486,7 +393,7 @@ export default function HRTEQPage() {
                     ))}
                   </div>
 
-                  {STORIES_DATA[selectedCategory]?.length > 4 && (
+                  {stories.length > 4 && (
                     <div className="mt-6 text-center">
                       <button 
                         onClick={() => setShowMoreBlogs(!showMoreBlogs)}
@@ -509,4 +416,31 @@ export default function HRTEQPage() {
       <Footer />
     </>
   );
+}
+
+function useElementSize(ref: React.RefObject<HTMLElement | null>) {
+  const [size, setSize] = useState({ w: 0, h: 0 });
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const update = () => {
+      const rect = el.getBoundingClientRect();
+      setSize({ w: Math.round(rect.width), h: Math.round(rect.height) });
+    };
+
+    update();
+
+    const ro = new ResizeObserver(() => update());
+    ro.observe(el);
+
+    window.addEventListener("resize", update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", update);
+    };
+  }, [ref]);
+
+  return size;
 }

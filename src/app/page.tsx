@@ -11,58 +11,32 @@ import { FloatingBanner } from "@/components/floating-banner";
 import { CompactGoogleBanner } from "@/components/compact-google-banner";
 import Footer from "@/components/footer";
 
-type CategoryKey = "trending" | "cxteq" | "marteq" | "hrteq" | "finteq";
-
-interface Blog {
-  id: string;
-  title: string;
-  excerpt: string;
-  category: CategoryKey;
-  image: string;
-}
-
-const BLOGS: Blog[] = [
-  {
-    id: "1",
-    title: "Demand efficiency: the only GTM metric that matters in 2026",
-    excerpt: "Why elite B2B teams are replacing volume obsession with efficiency.",
-    category: "trending",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1600&q=80",
-  },
-  {
-    id: "2",
-    title: "Funnels are dead — journeys win",
-    excerpt: "Why orchestration replaces funnels in modern GTM motions.",
-    category: "cxteq",
-    image: "https://images.unsplash.com/photo-1556155092-490a1ba16284?auto=format&fit=crop&w=1400&q=80",
-  },
-  {
-    id: "3",
-    title: "The MARTEQ stack built for content-led growth",
-    excerpt: "A minimal blueprint for marketing systems that scale.",
-    category: "marteq",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1400&q=80",
-  },
-  {
-    id: "4",
-    title: "Hiring velocity without quality loss",
-    excerpt: "Structured signals for better hiring outcomes.",
-    category: "hrteq",
-    image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1400&q=80",
-  },
-  {
-    id: "5",
-    title: "Payments, fraud, and AI risk in 2026",
-    excerpt: "What fintech buyers actually care about.",
-    category: "finteq",
-    image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=1400&q=80",
-  },
-];
+type FeaturedBlog = {
+  _id?: string;
+  slug?: string;
+  title?: string;
+  image?: string;
+};
 
 export default function Home() {
-  const featured = BLOGS[0];
   const unoptimized = process.env.NODE_ENV === "development";
   const [isUSMarket, setIsUSMarket] = React.useState(true); // US-based website
+  const [featured, setFeatured] = React.useState<FeaturedBlog | null>(null);
+
+  React.useEffect(() => {
+    const run = async () => {
+      try {
+        const res = await fetch("/api/cms/query?type=blog&limit=1&offset=0", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        const result = Array.isArray(data?.result) ? data.result : [];
+        setFeatured(result[0] || null);
+      } catch {
+        // ignore
+      }
+    };
+    run();
+  }, []);
 
   // Dynamic content based on market
   const marketContent = {
@@ -127,14 +101,18 @@ export default function Home() {
               </div>
 
               <div className="relative">
-                <Image
-                  src={featured.image}
-                  alt={featured.title}
-                  width={400}
-                  height={300}
-                  className="w-full h-auto max-w-[400px] rounded-2xl shadow-2xl"
-                  unoptimized={unoptimized}
-                />
+                {featured?.image ? (
+                  <Image
+                    src={featured.image}
+                    alt={featured.title || "Featured blog"}
+                    width={400}
+                    height={300}
+                    className="w-full h-auto max-w-[400px] rounded-2xl shadow-2xl"
+                    unoptimized={unoptimized}
+                  />
+                ) : (
+                  <div className="w-full max-w-[400px] h-[300px] rounded-2xl bg-[color:var(--surface-2)] border border-[color:var(--border)] shadow-2xl" />
+                )}
               </div>
             </div>
           </div>

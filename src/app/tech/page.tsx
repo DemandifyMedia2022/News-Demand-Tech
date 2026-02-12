@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
     ArrowUpRight,
     Calendar,
@@ -19,130 +20,85 @@ import {
     BookOpen,
     ArrowRight
 } from "lucide-react";
-import { Footer } from "@/components/footer";
+import Footer from "@/components/footer";
 import { Header } from "@/components/ui/header-3";
 import { Switcher } from "@/components/ui/switcher";
 import { CategoryDropdown } from "@/components/ui/category-dropdown";
+import { CmsBlog } from "@/lib/types";
 
-const TRENDING_ARTICLES = [
-    {
-        id: "1",
-        title: "The State of AI in 2026: From Hype to Utility",
-        excerpt: "Exploring how generative AI has transitioned from experimental tools to core business infrastructure.",
-        category: "AI",
-        image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1600&q=80",
-        readTime: "8 min",
-        date: "Jan 30, 2026",
-        author: "Dr. Aris Thorne",
-        views: "12.5K",
-        featured: true
-    },
-    {
-        id: "2",
-        title: "Cloud Sovereignty: The New Frontier for Global Enterprise",
-        excerpt: "Why regional cloud solutions are becoming the primary choice for data-sensitive industries.",
-        category: "Cloud",
-        image: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=1600&q=80",
-        readTime: "6 min",
-        date: "Jan 29, 2026",
-        author: "Sarah Jenkins",
-        views: "8.2K",
-        featured: false
-    },
-    {
-        id: "3",
-        title: "Zero Trust Architecture: Lessons from the Latest Breaches",
-        excerpt: "A deep dive into why perimeter-based security is failing and how Zero Trust is saving the day.",
-        category: "Cyber",
-        image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1600&q=80",
-        readTime: "10 min",
-        date: "Jan 28, 2026",
-        author: "Marcus Vane",
-        views: "15.3K",
-        featured: false
-    },
-    {
-        id: "4",
-        title: "Predictive Analytics: Anticipating Market Shifts Before They Happen",
-        excerpt: "How data-driven organizations are using advanced analytics to outpace their competitors.",
-        category: "Data Analytics",
-        image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1600&q=80",
-        readTime: "7 min",
-        date: "Jan 27, 2026",
-        author: "Elena Rodriguez",
-        views: "9.7K",
-        featured: false
-    },
-    {
-        id: "5",
-        title: "The Human Element in CX: Balancing Automation and Empathy",
-        excerpt: "Ensuring your customer experience doesn't lose its soul in the age of total automation.",
-        category: "CX",
-        image: "https://images.unsplash.com/photo-1556155092-490a1ba16284?auto=format&fit=crop&w=1600&q=80",
-        readTime: "9 min",
-        date: "Jan 26, 2026",
-        author: "David Chen",
-        views: "11.1K",
-    },
-    {
-        id: "6",
-        title: "Quantum Computing: The 2026 Roadmap",
-        excerpt: "What real-world applications are emerging as quantum processors finally hit critical stability.",
-        category: "AI",
-        image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=1600&q=80",
-        readTime: "12 min",
-        date: "Jan 25, 2026",
-        author: "Dr. Leo Zhang",
-        views: "18.4K",
-        featured: false
-    }
-];
-
-const CATEGORIES = ["All", "AI", "Cloud", "Cyber", "Data Analytics", "CX"];
+const CATEGORIES = ["All", "Trending Topic", "FinTeq", "CXTeq", "HRTeq"];
 
 // Professional category colors aligned with navy blue theme
 const CATEGORY_STYLES = {
-    "AI": {
+    "Trending Topic": {
         gradient: "from-[#1e3a8a] to-[#1e40af]",
         bg: "bg-[#1e3a8a]",
         text: "text-[#1e3a8a]",
-        icon: Brain
+        icon: TrendingUp
     },
-    "Cloud": {
+    "FinTeq": {
         gradient: "from-[#1e40af] to-[#2563eb]",
         bg: "bg-[#1e40af]",
         text: "text-[#1e40af]",
-        icon: CloudCog
+        icon: BarChart3
     },
-    "Cyber": {
+    "CXTeq": {
         gradient: "from-[#1e3a8a] to-[#3730a3]",
         bg: "bg-[#1e3a8a]",
         text: "text-[#1e3a8a]",
-        icon: ShieldCheck
+        icon: Headphones
     },
-    "Data Analytics": {
+    "HRTeq": {
         gradient: "from-[#2563eb] to-[#3b82f6]",
         bg: "bg-[#2563eb]",
         text: "text-[#2563eb]",
-        icon: BarChart3
-    },
-    "CX": {
-        gradient: "from-[#4f46e5] to-[#6366f1]",
-        bg: "bg-[#4f46e5]",
-        text: "text-[#4f46e5]",
-        icon: Headphones
+        icon: Users
     }
 };
 
 export default function TrendingTopicsPage() {
     const [activeCategory, setActiveCategory] = useState("All");
+    const [articles, setArticles] = useState<CmsBlog[]>([]);
+    const [isLoadingArticles, setIsLoadingArticles] = useState(false);
     const unoptimized = process.env.NODE_ENV === "development";
 
-    const filteredArticles = activeCategory === "All"
-        ? TRENDING_ARTICLES
-        : TRENDING_ARTICLES.filter(article => article.category === activeCategory);
+    useEffect(() => {
+        let cancelled = false;
 
-    const featuredArticle = TRENDING_ARTICLES.find(a => a.featured);
+        async function load() {
+            setIsLoadingArticles(true);
+            try {
+                const params = new URLSearchParams({
+                    type: "blog",
+                    limit: "60",
+                    offset: "0",
+                    published: "true",
+                });
+                if (activeCategory !== "All") params.set("category", activeCategory);
+
+                const res = await fetch(`/api/cms/query?${params.toString()}`, { cache: "no-store" });
+                if (!res.ok) throw new Error(`Failed to load articles (${res.status})`);
+                const data = await res.json();
+                const result = Array.isArray(data?.result) ? data.result : [];
+                if (!cancelled) setArticles(result);
+            } catch {
+                if (!cancelled) setArticles([]);
+            } finally {
+                if (!cancelled) setIsLoadingArticles(false);
+            }
+        }
+
+        load();
+        return () => {
+            cancelled = true;
+        };
+    }, [activeCategory]);
+
+    const featuredArticle = useMemo(() => articles[0], [articles]);
+    const filteredArticles = useMemo(() => {
+        if (activeCategory === "All") return articles;
+        return articles.filter((a) => (a?.category || "") === activeCategory);
+    }, [activeCategory, articles]);
 
     return (
         <>
@@ -262,8 +218,8 @@ export default function TrendingTopicsPage() {
                                 {/* Image Section */}
                                 <div className="relative lg:w-1/2 h-[400px] lg:h-auto overflow-hidden">
                                     <Image
-                                        src={featuredArticle.image}
-                                        alt={featuredArticle.title}
+                                        src={featuredArticle.image || "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1600&q=80"}
+                                        alt={featuredArticle.title || "Featured"}
                                         fill
                                         className="object-cover transition-transform duration-700 group-hover:scale-110"
                                         unoptimized={unoptimized}
@@ -284,17 +240,17 @@ export default function TrendingTopicsPage() {
                                 {/* Content Section */}
                                 <div className="lg:w-1/2 p-6 sm:p-10 lg:p-14 flex flex-col justify-center">
                                     <div className="flex flex-wrap items-center gap-3 mb-4 sm:mb-6">
-                                        <span className={`px-3 py-1 bg-gradient-to-r ${CATEGORY_STYLES[featuredArticle.category as keyof typeof CATEGORY_STYLES].gradient} text-white text-[10px] sm:text-xs font-bold uppercase rounded-lg`}>
+                                        <span className={`px-3 py-1 bg-gradient-to-r ${(CATEGORY_STYLES[(featuredArticle.category as keyof typeof CATEGORY_STYLES) || "AI"] || CATEGORY_STYLES["AI"]).gradient} text-white text-[10px] sm:text-xs font-bold uppercase rounded-lg`}>
                                             {featuredArticle.category}
                                         </span>
                                         <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-500">
                                             <span className="flex items-center gap-1.5">
                                                 <Calendar size={12} />
-                                                {featuredArticle.date}
+                                                {featuredArticle.publishDate || ""}
                                             </span>
                                             <span className="flex items-center gap-1.5">
                                                 <Eye size={12} />
-                                                {featuredArticle.views}
+                                                {""}
                                             </span>
                                         </div>
                                     </div>
@@ -308,18 +264,21 @@ export default function TrendingTopicsPage() {
                                     </p>
 
                                     <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-6">
-                                        <button className="w-full sm:w-auto group/btn inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#1e3a8a] to-[#1e40af] text-white px-8 py-4 rounded-xl font-bold transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-[#1e3a8a]/20">
+                                        <Link
+                                            href={`/blog/${featuredArticle.slug || featuredArticle._id}`}
+                                            className="w-full sm:w-auto group/btn inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#1e3a8a] to-[#1e40af] text-white px-8 py-4 rounded-xl font-bold transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-[#1e3a8a]/20"
+                                        >
                                             Read Full Article
                                             <ArrowUpRight size={20} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
-                                        </button>
+                                        </Link>
 
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#1e3a8a] to-[#1e40af] flex items-center justify-center text-white font-bold">
-                                                {featuredArticle.author.charAt(0)}
+                                                {(featuredArticle.author || "A").charAt(0)}
                                             </div>
                                             <div>
-                                                <p className="text-sm font-bold text-gray-900">{featuredArticle.author}</p>
-                                                <p className="text-xs text-gray-500">{featuredArticle.readTime} read</p>
+                                                <p className="text-sm font-bold text-gray-900">{featuredArticle.author || ""}</p>
+                                                <p className="text-xs text-gray-500">{featuredArticle.readTime || ""}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -330,13 +289,14 @@ export default function TrendingTopicsPage() {
 
                     {/* Professional Article Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
-                        {filteredArticles.filter(a => activeCategory !== "All" || !a.featured).map((article, index) => {
-                            const categoryStyle = CATEGORY_STYLES[article.category as keyof typeof CATEGORY_STYLES];
+                        {filteredArticles.filter((a) => activeCategory !== "All" || a !== featuredArticle).map((article, index) => {
+                            const categoryStyle = CATEGORY_STYLES[(article.category as keyof typeof CATEGORY_STYLES) || "AI"] || CATEGORY_STYLES["AI"];
                             const CategoryIcon = categoryStyle.icon;
 
                             return (
-                                <div
-                                    key={article.id}
+                                <Link
+                                    key={article.slug || article._id || String(index)}
+                                    href={`/blog/${article.slug || article._id}`}
                                     className="group animate-fadeInUp"
                                     style={{ animationDelay: `${index * 80}ms` }}
                                 >
@@ -347,8 +307,8 @@ export default function TrendingTopicsPage() {
                                         {/* Image */}
                                         <div className="relative aspect-[16/10] overflow-hidden">
                                             <Image
-                                                src={article.image}
-                                                alt={article.title}
+                                                src={article.image || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1600&q=80"}
+                                                alt={article.title || "Article"}
                                                 fill
                                                 className="object-cover transition-transform duration-700 group-hover:scale-110"
                                                 unoptimized={unoptimized}
@@ -367,7 +327,7 @@ export default function TrendingTopicsPage() {
                                             <div className="absolute bottom-4 right-4">
                                                 <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-semibold rounded-lg">
                                                     <Eye size={12} />
-                                                    {article.views}
+                                                    {""}
                                                 </div>
                                             </div>
                                         </div>
@@ -378,16 +338,16 @@ export default function TrendingTopicsPage() {
                                             <div className="flex items-center gap-4 text-xs text-gray-500 mb-4 font-medium">
                                                 <span className="flex items-center gap-1.5">
                                                     <Calendar size={13} />
-                                                    {article.date}
+                                                    {article.publishDate || ""}
                                                 </span>
                                                 <span className="flex items-center gap-1.5">
-                                                    <Clock size={13} />
-                                                    {article.readTime}
+                                                    <Clock size={12} />
+                                                    {article.readTime || ""}
                                                 </span>
                                             </div>
 
                                             {/* Title */}
-                                            <h3 className="text-xl font-extrabold text-gray-900 mb-3 line-clamp-2 leading-tight tracking-tight group-hover:text-[#1e3a8a] transition-colors">
+                                            <h3 className="text-xl font-bold text-gray-900 mb-3 leading-snug group-hover:text-[#1e3a8a] transition-colors line-clamp-2">
                                                 {article.title}
                                             </h3>
 
@@ -401,10 +361,10 @@ export default function TrendingTopicsPage() {
                                                 {/* Author */}
                                                 <div className="flex items-center gap-2">
                                                     <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${categoryStyle.gradient} flex items-center justify-center text-white text-xs font-bold`}>
-                                                        {article.author.charAt(0)}
+                                                        {(article.author || "A").charAt(0)}
                                                     </div>
                                                     <span className="text-xs font-bold text-gray-700">
-                                                        {article.author.split(' ')[0]}
+                                                        {(article.author || "").split(' ')[0] || ""}
                                                     </span>
                                                 </div>
 
@@ -415,7 +375,7 @@ export default function TrendingTopicsPage() {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </Link>
                             );
                         })}
                     </div>

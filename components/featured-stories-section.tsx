@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ArrowUpRight, Clock, Calendar } from "lucide-react";
 import gsap from "gsap";
@@ -10,50 +10,19 @@ import Link from "next/link";
 gsap.registerPlugin(ScrollTrigger);
 
 interface Article {
-  id: string;
-  category: string;
-  readTime: string;
-  publishDate: string;
-  title: string;
-  excerpt: string;
-  image: string;
-  author: string;
+  _id?: string;
+  slug?: string;
+  category?: string;
+  readTime?: string;
+  publishDate?: string;
+  title?: string;
+  excerpt?: string;
+  image?: string;
+  author?: string;
 }
 
-const ARTICLES: Article[] = [
-  {
-    id: "1",
-    category: "FINTEQ",
-    readTime: "5 min read",
-    publishDate: "Jan 28, 2024",
-    title: "The Future of Digital Banking: AI-Powered Solutions",
-    excerpt: "Explore how artificial intelligence is revolutionizing the banking sector with personalized customer experiences and enhanced security measures.",
-    image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=400&q=80",
-    author: "Sarah Mitchell"
-  },
-  {
-    id: "2",
-    category: "CXTEQ",
-    readTime: "3 min read",
-    publishDate: "Jan 26, 2024",
-    title: "Building Customer-Centric Experiences in 2024",
-    excerpt: "Learn the latest strategies for creating exceptional customer journeys that drive loyalty and business growth in the digital age.",
-    image: "https://images.unsplash.com/photo-1556155092-490a1ba16284?auto=format&fit=crop&w=400&q=80",
-    author: "Michael Chen"
-  },
-  {
-    id: "3",
-    category: "HRTEQ",
-    readTime: "4 min read",
-    publishDate: "Jan 24, 2024",
-    title: "Talent Acquisition Trends: What's Working Now",
-    excerpt: "Discover the most effective recruitment strategies and technologies that are helping companies attract and retain top talent in competitive markets.",
-    image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=400&q=80",
-    author: "Emily Rodriguez"
-  }
-];
-
 export function FeaturedStoriesSection() {
+  const [articles, setArticles] = useState<Article[]>([]);
   const sectionRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
@@ -137,6 +106,21 @@ export function FeaturedStoriesSection() {
     };
   }, []);
 
+  useEffect(() => {
+    const run = async () => {
+      try {
+        const res = await fetch("/api/cms/query?type=blog&limit=3&offset=0", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        const result = Array.isArray(data?.result) ? data.result : [];
+        setArticles(result);
+      } catch {
+        // ignore
+      }
+    };
+    run();
+  }, []);
+
   return (
     <section ref={sectionRef} className="relative py-6 sm:py-8 bg-[var(--background)] overflow-hidden">
       {/* Background decoration - matching hero section */}
@@ -168,9 +152,9 @@ export function FeaturedStoriesSection() {
           ref={cardsRef}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8"
         >
-          {ARTICLES.map((article, index) => (
+          {articles.map((article, index) => (
             <div
-              key={article.id}
+              key={article._id || article.slug || index}
               ref={(el) => { if (el) cardRefs.current[index] = el; }}
               className="group relative bg-white/80 rounded-3xl border border-white/30 shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden cursor-pointer opacity-100"
               style={{ opacity: 1, transform: 'none' }}
@@ -181,8 +165,8 @@ export function FeaturedStoriesSection() {
               {/* Image */}
               <div className="relative h-56 overflow-hidden">
                 <Image
-                  src={article.image}
-                  alt={article.title}
+                  src={article.image || ""}
+                  alt={article.title || ""}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
@@ -225,14 +209,14 @@ export function FeaturedStoriesSection() {
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1e3a8a] to-[#1e40af] flex items-center justify-center">
                       <span className="text-white text-xs font-bold">
-                        {article.author.split(' ').map(n => n[0]).join('')}
+                        {(article.author || "").split(' ').filter(Boolean).map(n => n[0]).join('')}
                       </span>
                     </div>
                     <span className="text-sm text-gray-600">{article.author}</span>
                   </div>
                   
                   <Link 
-                    href={`/blog/${article.id}`}
+                    href={`/blog/${article.slug || article._id}`}
                     className="inline-flex items-center text-[#1e3a8a] font-semibold text-sm hover:text-[#1e40af] transition-all duration-300 group"
                   >
                     Read more
@@ -246,7 +230,7 @@ export function FeaturedStoriesSection() {
                 {/* View All Articles Button */}
                 <div className="mt-4 pt-4 border-t border-gray-200/50">
                   <Link 
-                    href={`/tech/${article.category.toLowerCase()}`}
+                    href={`/tech/${String(article.category || "").toLowerCase()}`}
                     className="inline-flex items-center justify-center w-full gap-2 bg-gradient-to-r from-[#1e3a8a]/10 to-[#1e40af]/10 hover:from-[#1e3a8a]/20 hover:to-[#1e40af]/20 text-[#1e3a8a] hover:text-[#1e40af] px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300 border border-[#1e3a8a]/20 hover:border-[#1e3a8a]/40"
                   >
                     View all {article.category} articles

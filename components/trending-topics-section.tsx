@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { BarChart2, TrendingUp, Zap, Sparkles } from "lucide-react";
+import { CmsBlog } from "@/lib/types";
 
 interface TopicCardProps {
   rank: string;
@@ -50,32 +51,58 @@ const TopicCard: React.FC<TopicCardProps> = ({ rank, title, articles, status }) 
 };
 
 export const TrendingTopicsSection: React.FC = () => {
-  const trendingTopics = [
-    {
-      rank: "#1",
-      title: "Quantum Computing",
-      articles: 1247,
-      status: 'Hot' as const
-    },
-    {
-      rank: "#2", 
-      title: "AI Ethics",
-      articles: 892,
-      status: 'Rising' as const
-    },
-    {
-      rank: "#3",
-      title: "Blockchain Technology", 
-      articles: 756,
-      status: 'Trending' as const
-    },
-    {
-      rank: "#4",
-      title: "Cybersecurity",
-      articles: 623,
-      status: 'New' as const
+  const [items, setItems] = useState<CmsBlog[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const params = new URLSearchParams({
+          type: "blog",
+          limit: "500",
+          offset: "0",
+          category: "Trending Topic",
+          published: "true",
+        });
+        const res = await fetch(`/api/cms/query?${params.toString()}`, { cache: "no-store" });
+        if (!res.ok) throw new Error(`Failed to load topics (${res.status})`);
+        const data = await res.json();
+        const result = Array.isArray(data?.result) ? (data.result as CmsBlog[]) : [];
+        if (!cancelled) setItems(result);
+      } catch {
+        if (!cancelled) setItems([]);
+      }
     }
-  ];
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const trendingTopics = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const post of items) {
+      const single = typeof post?.subcategory === "string" ? post.subcategory.trim() : "";
+      const multi = Array.isArray(post?.subcategories) ? post.subcategories : [];
+      const keys = [single, ...multi].map((x) => (typeof x === "string" ? x.trim() : "")).filter(Boolean);
+      if (keys.length === 0) continue;
+      for (const k of keys) counts.set(k, (counts.get(k) || 0) + 1);
+    }
+
+    const top = Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 4);
+
+    const statusByIndex: Array<TopicCardProps["status"]> = ["Hot", "Rising", "Trending", "New"];
+    return top.map(([title, articles], idx) => ({
+      rank: `#${idx + 1}`,
+      title,
+      articles,
+      status: statusByIndex[idx] || "Trending",
+    }));
+  }, [items]);
 
   return (
     <section className="py-8">
