@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Calendar, Clock, TrendingUp, Shield, DollarSign, CreditCard, PieChart, Building, ChevronRight, ArrowRight } from "lucide-react";
-import Footer from "@/components/footer";
 import { CmsBlog } from "@/lib/types";
 
 const FIN_CATEGORIES = [
@@ -352,9 +351,6 @@ export default function FINTEQPage() {
         </section>
 
         </main>
-
-      {/* Footer */}
-      <Footer />
     </>
   );
 }

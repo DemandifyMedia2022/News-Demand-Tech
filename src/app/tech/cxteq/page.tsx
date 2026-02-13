@@ -4,7 +4,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Users, MessageSquare, TrendingUp, Headphones, Zap, Shield, Globe, CheckCircle, Star, ArrowRight, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram, ShieldCheck, HeartHandshake, Database, Calendar, Clock } from "lucide-react";
-import Footer from "@/components/footer";
 import { Header } from "@/components/ui/header-3";
 import { Switcher } from "@/components/ui/switcher";
 import { CmsBlog } from "@/lib/types";
@@ -222,7 +221,6 @@ export default function CXTEQPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </>
   );
 }

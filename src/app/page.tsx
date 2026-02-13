@@ -9,7 +9,6 @@ import { FeaturedStoriesSection } from "@/components/featured-stories-section";
 import { NewsletterSignup } from "@/components/newsletter-signup";
 import { FloatingBanner } from "@/components/floating-banner";
 import { CompactGoogleBanner } from "@/components/compact-google-banner";
-import Footer from "@/components/footer";
 
 type FeaturedBlog = {
   _id?: string;
@@ -212,9 +211,6 @@ export default function Home() {
         {/* Newsletter Signup Section */}
         <NewsletterSignup />
       </main>
-
-      {/* Footer */}
-      <Footer />
     </>
   );
 }

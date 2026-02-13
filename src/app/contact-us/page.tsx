@@ -7,7 +7,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Header } from "@/components/ui/header-3";
-import Footer from "@/components/footer";
 import {
     Clock,
     MapPin,
@@ -332,7 +331,6 @@ export default function ContactUsPage() {
                     </div>
                 </div>
             </main>
-            <Footer />
         </>
     );
 }

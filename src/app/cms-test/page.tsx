@@ -3,8 +3,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Header } from "@/components/ui/header-3";
-import Footer from "@/components/footer";
 import { CmsBlog } from "@/lib/types";
 
 export default function CmsTestPage() {
@@ -66,7 +64,6 @@ export default function CmsTestPage() {
 
   return (
     <>
-      <Header />
       <main className="min-h-screen pt-28 bg-[var(--background)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
@@ -165,7 +162,6 @@ export default function CmsTestPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </>
   );
 }

@@ -20,7 +20,6 @@ import {
     BookOpen,
     ArrowRight
 } from "lucide-react";
-import Footer from "@/components/footer";
 import { Header } from "@/components/ui/header-3";
 import { Switcher } from "@/components/ui/switcher";
 import { CategoryDropdown } from "@/components/ui/category-dropdown";
@@ -431,7 +430,6 @@ export default function TrendingTopicsPage() {
                     </div>
                 </div>
             </main>
-            <Footer />
 
             <style jsx>{`
                 @keyframes fadeInUp {

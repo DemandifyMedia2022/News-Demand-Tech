@@ -4,7 +4,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Calendar, Clock, TrendingUp, Target, Zap, BarChart, Megaphone, Mail, LineChart, Users2, Rocket } from "lucide-react";
-import Footer from "@/components/footer";
 import { Header } from "@/components/ui/header-3";
 import { Switcher } from "@/components/ui/switcher";
 import { CmsBlog } from "@/lib/types";
@@ -229,7 +228,6 @@ export default function MARTEQPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </>
   );
 }

@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Users, TrendingUp, BarChart3, Target, Zap, Shield, Globe, CheckCircle, Star, ArrowRight, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram, Briefcase, Brain, Heart, Plus, Clock } from "lucide-react";
-import Footer from "@/components/footer";
 import { CmsBlog } from "@/lib/types";
 
 const HR_CATEGORIES = [
@@ -409,11 +408,7 @@ export default function HRTEQPage() {
             </div>
           </div>
         </section>
-
-        </main>
-
-      {/* Footer */}
-      <Footer />
+      </main>
     </>
   );
 }
