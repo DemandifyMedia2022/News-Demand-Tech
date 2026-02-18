@@ -42,6 +42,7 @@ export default function ContactUsPage() {
         consent: false,
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [submitStatus, setSubmitStatus] = useState<{
         type: "success" | "error";
         message: string;
@@ -66,11 +67,24 @@ export default function ContactUsPage() {
         return () => ctx.revert();
     }, []);
 
+    const getFieldError = (name: string) => {
+        const msg = fieldErrors[name];
+        return typeof msg === "string" && msg.trim() ? msg : "";
+    };
+
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
+
+        if (getFieldError(name)) {
+            setFieldErrors((prev) => {
+                const next = { ...prev };
+                delete next[name];
+                return next;
+            });
+        }
 
         if (name === "company") {
             if (value === "") {
@@ -88,6 +102,14 @@ export default function ContactUsPage() {
 
     const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData((prev) => ({ ...prev, consent: e.target.checked }));
+
+        if (getFieldError("consent")) {
+            setFieldErrors((prev) => {
+                const next = { ...prev };
+                delete next.consent;
+                return next;
+            });
+        }
     };
 
     const validateCompanyWebsite = (website: string): boolean => {
@@ -100,30 +122,67 @@ export default function ContactUsPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.consent) {
-            setSubmitStatus({ type: "error", message: "Please agree to receive communications" });
-            return;
-        }
-
-        if (formData.company && !validateCompanyWebsite(formData.company)) {
-            setSubmitStatus({ type: "error", message: 'Website format: www.example.com' });
-            return;
-        }
-
         setIsSubmitting(true);
         setSubmitStatus(null);
+        setFieldErrors({});
 
         try {
-            await new Promise((resolve) => setTimeout(resolve, 1500));
-            setSubmitStatus({ type: "success", message: "Thank you! We'll respond within 24 hours." });
-            setFormData({ firstName: "", lastName: "", email: "", phone: "", company: "", message: "", consent: false });
-            setWebsiteValidation(null);
+            const res = await fetch("/api/contact", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+
+
+                if (data.type === "validation" && data.errors) {
+                    const errors: Record<string, string> = {};
+                    data.errors.forEach((err: { field: string; message: string }) => {
+                        errors[err.field] = err.message;
+                    });
+
+                    setFieldErrors(errors);
+                    return;
+                }
+
+
+                setSubmitStatus({
+                    type: "error",
+                    message: data.message || "Something went wrong.",
+                });
+
+                return;
+            }
+
+
+            setSubmitStatus({
+                type: "success",
+                message: "Thank you! We'll respond within 24 hours.",
+            });
+
+            setFormData({
+                firstName: "",
+                lastName: "",
+                email: "",
+                phone: "",
+                company: "",
+                message: "",
+                consent: false,
+            });
+
         } catch {
-            setSubmitStatus({ type: "error", message: "Failed to submit. Please try again." });
+            setSubmitStatus({
+                type: "error",
+                message: "Network error. Please try again.",
+            });
         } finally {
             setIsSubmitting(false);
         }
     };
+
 
     const contactInfo: ContactInfo = [
         { title: "Office Hours", icon: Clock, description: "Mon - Fri, 10 AM - 7 PM" },
@@ -135,7 +194,7 @@ export default function ContactUsPage() {
     return (
         <>
             <Header />
-            <main ref={pageRef} className="relative min-h-screen bg-[var(--background)] pt-20 pb-8 overflow-hidden">
+            <main ref={pageRef} className="relative min-h-screen bg-[var(--background)] pt-28 pb-8 overflow-hidden">
                 {/* Background */}
                 <div className="absolute inset-0 pointer-events-none z-0">
                     <div className="absolute -top-20 -left-20 w-72 h-72 bg-[#1e3a8a]/8 rounded-full blur-3xl" />
@@ -149,14 +208,11 @@ export default function ContactUsPage() {
                 <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6">
                     {/* Compact Header */}
                     <div className="animate-in text-center mb-6">
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 backdrop-blur border border-[#1e3a8a]/10 shadow-sm mb-3">
-                            <MessageSquare size={12} className="text-[#1e3a8a]" />
-                            <span className="text-[10px] font-bold text-[#1e3a8a] uppercase tracking-wider">Get in Touch</span>
-                        </div>
+
                         <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 mb-2">
                             Contact Our <span className="bg-gradient-to-r from-[#1e3a8a] to-[#2563eb] bg-clip-text text-transparent">Team</span>
                         </h1>
-                        <p className="text-sm text-gray-600 max-w-lg mx-auto">
+                        <p className="text-md text-gray-600 max-w-lg mx-auto">
                             Share your requirements and we&apos;ll get back to you within 24 hours.
                         </p>
                     </div>
@@ -202,12 +258,18 @@ export default function ContactUsPage() {
                                         <div>
                                             <label className="block text-xs font-semibold text-gray-700 mb-1">First Name *</label>
                                             <Input name="firstName" value={formData.firstName} onChange={handleInputChange} placeholder="John" required disabled={isSubmitting}
-                                                className="h-10 rounded-lg border-gray-200 focus-visible:ring-[#1e3a8a]/50" />
+                                                className={`h-10 rounded-lg focus-visible:ring-[#1e3a8a]/50 ${getFieldError("firstName") ? "border-red-400" : "border-gray-200"}`} />
+                                            {getFieldError("firstName") && (
+                                                <p className="text-[12px] mt-1 text-red-600">{getFieldError("firstName")}</p>
+                                            )}
                                         </div>
                                         <div>
                                             <label className="block text-xs font-semibold text-gray-700 mb-1">Last Name *</label>
                                             <Input name="lastName" value={formData.lastName} onChange={handleInputChange} placeholder="Doe" required disabled={isSubmitting}
-                                                className="h-10 rounded-lg border-gray-200 focus-visible:ring-[#1e3a8a]/50" />
+                                                className={`h-10 rounded-lg focus-visible:ring-[#1e3a8a]/50 ${getFieldError("lastName") ? "border-red-400" : "border-gray-200"}`} />
+                                            {getFieldError("lastName") && (
+                                                <p className="text-[12px] mt-1 text-red-600">{getFieldError("lastName")}</p>
+                                            )}
                                         </div>
                                     </div>
 
@@ -216,12 +278,18 @@ export default function ContactUsPage() {
                                         <div>
                                             <label className="block text-xs font-semibold text-gray-700 mb-1">Email *</label>
                                             <Input name="email" type="email" value={formData.email} onChange={handleInputChange} placeholder="john@example.com" required disabled={isSubmitting}
-                                                className="h-10 rounded-lg border-gray-200 focus-visible:ring-[#1e3a8a]/50" />
+                                                className={`h-10 rounded-lg focus-visible:ring-[#1e3a8a]/50 ${getFieldError("email") ? "border-red-400" : "border-gray-200"}`} />
+                                            {getFieldError("email") && (
+                                                <p className="text-[12px] mt-1 text-red-600">{getFieldError("email")}</p>
+                                            )}
                                         </div>
                                         <div>
                                             <label className="block text-xs font-semibold text-gray-700 mb-1">Phone</label>
                                             <Input name="phone" type="tel" value={formData.phone} onChange={handleInputChange} placeholder="+1 (555) 123-4567" disabled={isSubmitting}
-                                                className="h-10 rounded-lg border-gray-200 focus-visible:ring-[#1e3a8a]/50" />
+                                                className={`h-10 rounded-lg focus-visible:ring-[#1e3a8a]/50 ${getFieldError("phone") ? "border-red-400" : "border-gray-200"}`} />
+                                            {getFieldError("phone") && (
+                                                <p className="text-[12px] mt-1 text-red-600">{getFieldError("phone")}</p>
+                                            )}
                                         </div>
                                     </div>
 
@@ -229,8 +297,11 @@ export default function ContactUsPage() {
                                     <div>
                                         <label className="block text-xs font-semibold text-gray-700 mb-1">Company Website</label>
                                         <Input name="company" value={formData.company} onChange={handleInputChange} placeholder="www.yourcompany.com" disabled={isSubmitting}
-                                            className={`h-10 rounded-lg focus-visible:ring-[#1e3a8a]/50 ${websiteValidation === null ? "border-gray-200" : websiteValidation.isValid ? "border-green-400" : "border-red-400"
+                                            className={`h-10 rounded-lg focus-visible:ring-[#1e3a8a]/50 ${getFieldError("company") ? "border-red-400" : websiteValidation === null ? "border-gray-200" : websiteValidation.isValid ? "border-green-400" : "border-red-400"
                                                 }`} />
+                                        {getFieldError("company") && (
+                                            <p className="text-[12px] mt-1 text-red-600">{getFieldError("company")}</p>
+                                        )}
                                         {websiteValidation && (
                                             <p className={`text-[10px] mt-1 flex items-center gap-1 ${websiteValidation.isValid ? "text-green-600" : "text-red-600"}`}>
                                                 {websiteValidation.isValid ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
@@ -243,17 +314,23 @@ export default function ContactUsPage() {
                                     <div>
                                         <label className="block text-xs font-semibold text-gray-700 mb-1">Message *</label>
                                         <Textarea name="message" value={formData.message} onChange={handleInputChange} placeholder="Tell us about your requirements..." rows={4} required disabled={isSubmitting}
-                                            className="rounded-lg border-gray-200 focus:ring-[#1e3a8a]/50" />
+                                            className={`rounded-lg focus:ring-[#1e3a8a]/50 ${getFieldError("message") ? "border-red-400" : "border-gray-200"}`} />
+                                        {getFieldError("message") && (
+                                            <p className="text-[12px] mt-1 text-red-600">{getFieldError("message")}</p>
+                                        )}
                                     </div>
 
                                     {/* Consent */}
                                     <div className="flex items-start gap-2">
                                         <input id="consent" type="checkbox" checked={formData.consent} onChange={handleCheckboxChange} disabled={isSubmitting}
-                                            className="mt-0.5 h-4 w-4 rounded border-gray-300 text-[#1e3a8a] focus:ring-[#1e3a8a]" />
-                                        <label htmlFor="consent" className="text-xs text-gray-600 leading-relaxed">
+                                            className={`mt-0.5 h-4 w-4 rounded text-[#1e3a8a] focus:ring-[#1e3a8a] ${getFieldError("consent") ? "border-red-400" : "border-gray-300"}`} />
+                                        <label htmlFor="consent" className="text-sm text-gray-600 leading-relaxed">
                                             I agree to receive communications from News Demand-Tech.
                                         </label>
                                     </div>
+                                    {getFieldError("consent") && (
+                                        <p className="text-[12px] mt-1 text-red-600">{getFieldError("consent")}</p>
+                                    )}
 
                                     {/* Submit */}
                                     <button type="submit" disabled={isSubmitting}

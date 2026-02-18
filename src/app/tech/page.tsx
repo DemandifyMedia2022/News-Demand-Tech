@@ -239,7 +239,7 @@ export default function TrendingTopicsPage() {
                                 {/* Content Section */}
                                 <div className="lg:w-1/2 p-6 sm:p-10 lg:p-14 flex flex-col justify-center">
                                     <div className="flex flex-wrap items-center gap-3 mb-4 sm:mb-6">
-                                        <span className={`px-3 py-1 bg-gradient-to-r ${(CATEGORY_STYLES[(featuredArticle.category as keyof typeof CATEGORY_STYLES) || "AI"] || CATEGORY_STYLES["AI"]).gradient} text-white text-[10px] sm:text-xs font-bold uppercase rounded-lg`}>
+                                        <span className={`px-3 py-1 bg-gradient-to-r ${(CATEGORY_STYLES[(featuredArticle.category as keyof typeof CATEGORY_STYLES)] || CATEGORY_STYLES["Trending Topic"]).gradient} text-white text-[10px] sm:text-xs font-bold uppercase rounded-lg`}>
                                             {featuredArticle.category}
                                         </span>
                                         <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-500">
@@ -289,7 +289,9 @@ export default function TrendingTopicsPage() {
                     {/* Professional Article Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
                         {filteredArticles.filter((a) => activeCategory !== "All" || a !== featuredArticle).map((article, index) => {
-                            const categoryStyle = CATEGORY_STYLES[(article.category as keyof typeof CATEGORY_STYLES) || "AI"] || CATEGORY_STYLES["AI"];
+                            const categoryStyle =
+                                CATEGORY_STYLES[article.category as keyof typeof CATEGORY_STYLES] ||
+                                CATEGORY_STYLES["Trending Topic"];
                             const CategoryIcon = categoryStyle.icon;
 
                             return (
