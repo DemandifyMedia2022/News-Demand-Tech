@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Users, TrendingUp, BarChart3, Target, Zap, Shield, Globe, CheckCircle, Star, ArrowRight, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram, Briefcase, Brain, Heart, Plus, Clock } from "lucide-react";
+import { ArrowUpRight, Users, ArrowRight, BarChart3, Target, Briefcase, Brain, Heart, Plus, Clock } from "lucide-react";
 import { CmsBlog } from "@/lib/types";
 
 const HR_CATEGORIES = [
@@ -59,7 +59,6 @@ export default function HRTEQPage() {
   const [selectedCategory, setSelectedCategory] = useState("Recruitment & Staff Augmentation");
   const [showMoreBlogs, setShowMoreBlogs] = useState(false);
   const [stories, setStories] = useState<Story[]>([]);
-  const [isLoadingStories, setIsLoadingStories] = useState(false);
   const unoptimized = process.env.NODE_ENV === "development";
   const leftBannerRef = useRef<HTMLDivElement | null>(null);
   const analyticsBannerRef = useRef<HTMLDivElement | null>(null);
@@ -70,7 +69,6 @@ export default function HRTEQPage() {
     let cancelled = false;
 
     async function load() {
-      setIsLoadingStories(true);
       try {
         const params = new URLSearchParams({
           type: "blog",
@@ -88,7 +86,7 @@ export default function HRTEQPage() {
       } catch {
         if (!cancelled) setStories([]);
       } finally {
-        if (!cancelled) setIsLoadingStories(false);
+        // No-op since we removed isLoadingStories state
       }
     }
 

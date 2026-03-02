@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Button, FlowButton } from "@/components/ui/button";
 import { FlowButton2 } from "@/components/ui/button2";
 import { cn } from "@/lib/utils";
@@ -96,16 +97,16 @@ export function Header({ onSearchChange }: HeaderProps) {
 			<nav className="flex h-18 items-center px-3 md:px-6 gap-4">
 
 				{/* Logo */}
-				<a href="/" className="flex items-center gap-2">
+				<Link href="/" className="flex items-center gap-2">
 					<Image
-						src="/img/D_logo.png"
+						src="/img/D_logo.svg"
 						alt="Demand Teq"
 						width={48}
 						height={48}
 						className="h-10 w-10 md:h-12 md:w-12"
 						priority
 					/>
-				</a>
+				</Link>
 
 				{/* Date / Time */}
 				<div className="flex-1 flex justify-center">
@@ -128,7 +129,7 @@ export function Header({ onSearchChange }: HeaderProps) {
 						<NavigationMenuList className="space-x-5">
 
 							<NavigationMenuLink asChild>
-								<a href="/" className={navItemClass}>Home</a>
+								<Link href="/" className={navItemClass}>Home</Link>
 							</NavigationMenuLink>
 
 							<NavigationMenuItem>
@@ -201,10 +202,10 @@ export function Header({ onSearchChange }: HeaderProps) {
 			<BannerScroller />
 
 			<MobileMenu open={open}>
-				<a href="/" className="p-2 text-black">Home</a>
-				<a href="/tech" className="p-2 text-black">Tech News</a>
-				<a href="/event" className="p-2 text-black">Events</a>
-				<a href="/about-us" className="p-2 text-black">About Us</a>
+				<Link href="/" className="p-2 text-black">Home</Link>
+				<Link href="/tech" className="p-2 text-black">Tech News</Link>
+				<Link href="/event" className="p-2 text-black">Events</Link>
+				<Link href="/about-us" className="p-2 text-black">About Us</Link>
 			</MobileMenu>
 		</header>
 	);

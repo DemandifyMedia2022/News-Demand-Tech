@@ -26,13 +26,34 @@ export async function GET(req: Request) {
   cmsUrl.searchParams.set("limit", "500");
   cmsUrl.searchParams.set("offset", "0");
 
-  const res = await fetch(cmsUrl.toString(), {
-    method: "GET",
-    headers: {
-      ...(apiKey ? { "x-api-key": apiKey } : {}),
-    },
-    cache: "no-store",
-  });
+  let res: Response;
+  try {
+    res = await fetch(cmsUrl.toString(), {
+      method: "GET",
+      headers: {
+        ...(apiKey ? { "x-api-key": apiKey } : {}),
+      },
+      cache: "no-store",
+    });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    const empty = { result: [], total: 0 };
+    const dbg = (debug || "").trim().toLowerCase();
+    const debugEnabled = !!dbg && dbg !== "false" && dbg !== "0";
+
+    if (debugEnabled) {
+      return NextResponse.json({
+        ...empty,
+        debug: {
+          upstream: "unreachable",
+          message,
+          baseUrl,
+        },
+      });
+    }
+
+    return NextResponse.json(empty);
+  }
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
@@ -42,8 +63,9 @@ export async function GET(req: Request) {
     );
   }
 
-  const data = await res.json();
-  const result = Array.isArray(data?.result) ? data.result : [];
+  const data: unknown = await res.json();
+  const dataObj = data as any;
+  const result = Array.isArray(dataObj?.result) ? dataObj.result : [];
 
   const stats = {
     upstreamTotal: result.length,
@@ -69,20 +91,21 @@ export async function GET(req: Request) {
   const wantSubcategory = norm(subcategory);
   const wantPublished = norm(published);
 
-  const filtered = result.filter((doc: any) => {
+  const filtered = result.filter((doc: unknown) => {
+    const docObj = doc as any;
     const cleaned = sanitizePostTaxonomy(doc);
     if (!cleaned) {
       stats.invalidTaxonomy += 1;
 
       if (rejectedSamples.length < 10) {
         rejectedSamples.push({
-          _id: doc?._id,
-          slug: doc?.slug,
-          title: doc?.title,
-          published: doc?.published,
-          category: doc?.category,
-          subcategory: doc?.subcategory,
-          subcategories: doc?.subcategories,
+          _id: docObj?._id,
+          slug: docObj?.slug,
+          title: docObj?.title,
+          published: docObj?.published,
+          category: docObj?.category,
+          subcategory: docObj?.subcategory,
+          subcategories: docObj?.subcategories,
         });
       }
 
@@ -103,7 +126,7 @@ export async function GET(req: Request) {
     }
 
     if (wantPublished) {
-      const pub = doc?.published;
+      const pub = docObj?.published;
       const pubNorm = typeof pub === "boolean" ? (pub ? "true" : "false") : norm(pub);
       if (pubNorm !== wantPublished) {
         stats.publishedMismatch += 1;

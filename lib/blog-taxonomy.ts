@@ -70,8 +70,15 @@ export function isAllowedSubcategory(category: BlogCategory, subcategory: unknow
   return BLOG_TAXONOMY[category].subcategories.some((x) => norm(x) === s);
 }
 
-export function sanitizePostTaxonomy(doc: any): { category: BlogCategory; subcategories: string[] } | null {
-  const rawCategory = typeof doc?.category === "string" ? doc.category.trim() : "";
+interface DocumentWithTaxonomy {
+  category?: unknown;
+  subcategory?: unknown;
+  subcategories?: unknown;
+}
+
+export function sanitizePostTaxonomy(doc: unknown): { category: BlogCategory; subcategories: string[] } | null {
+  const docObj = doc as DocumentWithTaxonomy;
+  const rawCategory = typeof docObj?.category === "string" ? docObj.category.trim() : "";
 
   let category = normalizeCategory(rawCategory);
   let embeddedSubcategory: string | null = null;
@@ -92,8 +99,8 @@ export function sanitizePostTaxonomy(doc: any): { category: BlogCategory; subcat
 
   const rawSubs: unknown[] = [];
   if (embeddedSubcategory) rawSubs.push(embeddedSubcategory);
-  if (typeof doc?.subcategory === "string") rawSubs.push(doc.subcategory);
-  if (Array.isArray(doc?.subcategories)) rawSubs.push(...doc.subcategories);
+  if (typeof docObj?.subcategory === "string") rawSubs.push(docObj.subcategory);
+  if (Array.isArray(docObj?.subcategories)) rawSubs.push(...docObj.subcategories);
 
   const cleaned = rawSubs
     .filter((x) => typeof x === "string")

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Calendar, Clock, TrendingUp, Shield, DollarSign, CreditCard, PieChart, Building, ChevronRight, ArrowRight } from "lucide-react";
+import { ArrowUpRight, Clock, Shield, DollarSign, CreditCard, PieChart, Building, ArrowRight } from "lucide-react";
 import { CmsBlog } from "@/lib/types";
 
 const FIN_CATEGORIES = [
@@ -41,7 +41,12 @@ const FIN_CATEGORIES = [
 
 type Story = CmsBlog;
 
-const FIN_FEATURES = [
+interface FinFeature {
+  title: string;
+  description: string;
+}
+
+const FIN_FEATURES: FinFeature[] = [
   {
     title: "Digital Banking",
     description: "Next-generation banking platforms with AI-powered customer experiences"
@@ -64,7 +69,6 @@ export default function FINTEQPage() {
   const [selectedCategory, setSelectedCategory] = useState("Banking Tech");
   const [showMoreBlogs, setShowMoreBlogs] = useState(false);
   const [stories, setStories] = useState<Story[]>([]);
-  const [isLoadingStories, setIsLoadingStories] = useState(false);
   const unoptimized = process.env.NODE_ENV === "development";
   const analyticsBannerRef = useRef<HTMLDivElement | null>(null);
   const analyticsBannerSize = useElementSize(analyticsBannerRef);
@@ -73,7 +77,6 @@ export default function FINTEQPage() {
     let cancelled = false;
 
     async function load() {
-      setIsLoadingStories(true);
       try {
         const params = new URLSearchParams({
           type: "blog",
@@ -91,7 +94,7 @@ export default function FINTEQPage() {
       } catch {
         if (!cancelled) setStories([]);
       } finally {
-        if (!cancelled) setIsLoadingStories(false);
+        // No-op since we removed isLoadingStories state
       }
     }
 
@@ -141,7 +144,7 @@ export default function FINTEQPage() {
 
                 {/* Feature Cards - Smaller */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {FIN_FEATURES.map((feature: any, index: number) => (
+                  {FIN_FEATURES.map((feature: FinFeature, index: number) => (
                     <div key={index} className="group relative">
                       <div className="absolute -inset-1 bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] rounded-xl opacity-0 group-hover:opacity-15 transition-opacity duration-300 blur-lg"></div>
                       <div className="relative bg-white rounded-xl p-4 border border-[var(--border)] shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">

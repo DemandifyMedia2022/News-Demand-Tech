@@ -111,7 +111,7 @@ export const TrendingTopicsSection: React.FC = () => {
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-semibold uppercase tracking-widest text-[color:var(--muted-foreground)]">
-              WHAT'S HOT
+              WHAT&apos;S HOT
             </span>
             <span className="text-xs font-semibold uppercase tracking-widest text-[#1e3a8a]">
               •

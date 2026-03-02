@@ -3,8 +3,7 @@
 import React, { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Shield, Lock, Eye, Database, UserCheck, FileText, Home, DollarSign, CheckCircle, Mail, Phone, MapPin, ArrowRight, AlertCircle, Globe, Users, Clock, Calendar, Download, Sparkles, Zap, ShieldCheck } from "lucide-react";
-import Link from "next/link";
+import { Shield, Eye, Database, UserCheck, FileText, DollarSign, Mail, Phone, MapPin, AlertCircle, Globe, Users, Clock, Calendar } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -247,7 +246,7 @@ export default function CCPA() {
 
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                   <p className="text-lg text-gray-600 leading-relaxed">
-                    We may sell your personal information, relating to the categories listed above, to our customers, after you have expressed an interest in their goods or services. This interest may be expressed in numerous ways, including submitting your information to us in order to download a digital asset (such as a white-paper or ebook), by engaging with any of our email marketing or clicking on a digital advert hosted by us. Please ensure that you read and agree to our customers' privacy policies before expressing any interest in their product as outlined above.
+                    We may sell your personal information, relating to the categories listed above, to our customers, after you have expressed an interest in their goods or services. This interest may be expressed in numerous ways, including submitting your information to us in order to download a digital asset (such as a white-paper or ebook), by engaging with any of our email marketing or clicking on a digital advert hosted by us. Please ensure that you read and agree to our customers&apos; privacy policies before expressing any interest in their product as outlined above.
                   </p>
                 </div>
               </div>

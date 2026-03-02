@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ArrowUpRight, Mail, Users, X, Sparkles } from "lucide-react";
+import { ArrowUpRight, Mail, Users, X } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -16,7 +16,6 @@ export function NewsletterSignup() {
   const overlayRef = useRef<HTMLDivElement>(null);
 
   const [isOpen, setIsOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [status, setStatus] = useState<
@@ -95,10 +94,6 @@ export function NewsletterSignup() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, []);
-
-  useEffect(() => {
-    setMounted(true);
   }, []);
 
   useEffect(() => {
@@ -190,10 +185,11 @@ export function NewsletterSignup() {
         setEmailError("");
         setStatus({ type: "idle" });
       }, 1000);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Please try again.";
       setStatus({
         type: "error",
-        message: error.message || "Please try again.",
+        message: errorMessage,
       });
     }
   };
@@ -256,8 +252,7 @@ export function NewsletterSignup() {
         </div>
       </div>
 
-      {mounted &&
-        isOpen &&
+      {isOpen &&
         createPortal(
           <div
             className="fixed inset-0 z-[9999] flex items-center justify-center px-4"

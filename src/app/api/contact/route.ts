@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { pool } from "@/lib/db";
-import { transporter } from "@/lib/mailer";
+import { getTransporter } from "@/lib/mailer";
 import { z, ZodError } from "zod";
 
 const MAX_BODY_BYTES = 25_000;
@@ -40,12 +40,33 @@ function isOriginAllowed(req: NextRequest) {
 
   return allowed.includes(origin);
 }
+const blockedEmailDomains = [
+  "gmail.com",
+  "yahoo.com",
+  "outlook.com",
+  "hotmail.com",
+  "live.com",
+  "aol.com",
+  "icloud.com",
+  "protonmail.com",
+  "zoho.com",
+  "rediffmail.com"
+];
 
 
 const contactSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required").max(100),
   lastName: z.string().trim().min(1, "Last name is required").max(100),
-  email: z.string().email("Please enter a valid email address"),
+  email: z
+    .string()
+    .email("Please enter a valid email address")
+    .refine((email) => {
+      const domain = email.split("@")[1]?.toLowerCase();
+      return domain && !blockedEmailDomains.includes(domain);
+    }, {
+      message: "Please use your company email address (no Gmail/Yahoo/etc.)"
+    }),
+
   phone: z.string().trim().max(30).optional(),
   company: z.string().trim().max(200).optional(),
   message: z
@@ -158,7 +179,8 @@ export async function POST(req: NextRequest) {
       const safeMessage = escapeHtml(parsed.message).replaceAll("\n", "<br/>");
 
       // ✅ Send notification email to team
-      if (notificationEmails.length > 0) {
+      const transporter = await getTransporter();
+      if (transporter && notificationEmails.length > 0) {
         await transporter.sendMail({
           from: `"Demandify Media" <${process.env.SMTP_USER}>`,
           to: notificationEmails,
@@ -176,19 +198,21 @@ export async function POST(req: NextRequest) {
       }
 
       // ✅ Send confirmation email to user
-      await transporter.sendMail({
-        from: `"Demandify Media" <${process.env.SMTP_USER}>`,
-        to: parsed.email,
-        subject: "Thank you for contacting News Demand-Tech",
-        html: `
-          <h2>Thank You ${safeFirstName}!</h2>
-          <p>We have received your message and our team will get in touch with you within 24 hours.</p>
-          <p><strong>Your Message:</strong></p>
-          <p>${safeMessage}</p>
-          <br/>
-          <p>Best Regards,<br/>News Demand-Tech Team</p>
-        `,
-      });
+      if (transporter) {
+        await transporter.sendMail({
+          from: `"Demandify Media" <${process.env.SMTP_USER}>`,
+          to: parsed.email,
+          subject: "Thank you for contacting News Demand-Tech",
+          html: `
+            <h2>Thank You ${safeFirstName}!</h2>
+            <p>We have received your message and our team will get in touch with you within 24 hours.</p>
+            <p><strong>Your Message:</strong></p>
+            <p>${safeMessage}</p>
+            <br/>
+            <p>Best Regards,<br/>News Demand-Tech Team</p>
+          `,
+        });
+      }
     } catch (mailError) {
       emailDelivered = false;
       console.error("Contact form email send failed:", mailError);

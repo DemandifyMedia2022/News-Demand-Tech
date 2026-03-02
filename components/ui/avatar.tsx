@@ -3,9 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> { }
-
-function Avatar({ className, ...props }: AvatarProps) {
+function Avatar({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
     return (
         <div
             className={cn(
@@ -17,9 +15,7 @@ function Avatar({ className, ...props }: AvatarProps) {
     );
 }
 
-interface AvatarFallbackProps extends React.HTMLAttributes<HTMLDivElement> { }
-
-function AvatarFallback({ className, ...props }: AvatarFallbackProps) {
+function AvatarFallback({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
     return (
         <div
             className={cn(

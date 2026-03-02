@@ -9,16 +9,13 @@ import {
     Clock,
     TrendingUp,
     Zap,
-    Brain,
-    CloudCog,
-    ShieldCheck,
     BarChart3,
-    Headphones,
     Sparkles,
     Users,
     Eye,
     BookOpen,
-    ArrowRight
+    ArrowRight,
+    Headphones
 } from "lucide-react";
 import { Header } from "@/components/ui/header-3";
 import { Switcher } from "@/components/ui/switcher";
@@ -58,14 +55,12 @@ const CATEGORY_STYLES = {
 export default function TrendingTopicsPage() {
     const [activeCategory, setActiveCategory] = useState("All");
     const [articles, setArticles] = useState<CmsBlog[]>([]);
-    const [isLoadingArticles, setIsLoadingArticles] = useState(false);
     const unoptimized = process.env.NODE_ENV === "development";
 
     useEffect(() => {
         let cancelled = false;
 
         async function load() {
-            setIsLoadingArticles(true);
             try {
                 const params = new URLSearchParams({
                     type: "blog",
@@ -83,7 +78,7 @@ export default function TrendingTopicsPage() {
             } catch {
                 if (!cancelled) setArticles([]);
             } finally {
-                if (!cancelled) setIsLoadingArticles(false);
+                // No-op since we removed isLoadingArticles state
             }
         }
 
@@ -483,8 +478,4 @@ export default function TrendingTopicsPage() {
             `}</style>
         </>
     );
-}
-
-function cn(...classes: (string | boolean | undefined)[]) {
-    return classes.filter(Boolean).join(" ");
 }

@@ -1,15 +1,32 @@
 import nodemailer from "nodemailer";
 
-const smtpPort = process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587;
-const smtpSecure = smtpPort === 465;
+const smtpSecure = process.env.SMTP_SECURE === "true";
+const smtpHost = process.env.SMTP_HOST;
+const smtpPort = Number(process.env.SMTP_PORT) || 587;
+const smtpUser = process.env.SMTP_USER;
+const smtpPassHash = process.env.SMTP_PASS_HASH;
 
-export const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: smtpPort,
-  secure: smtpSecure,
-  requireTLS: !smtpSecure,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+let cachedTransporter: nodemailer.Transporter | null = null;
+
+async function getTransporter(): Promise<nodemailer.Transporter | null> {
+  if (cachedTransporter) return cachedTransporter;
+  if (!smtpHost || !smtpPort || !smtpUser || !smtpPassHash) return null;
+
+  // In production, fetch plaintext from a secure vault; here we fallback to env var
+  const pass = process.env.SMTP_PASS || "";
+  const transporter = nodemailer.createTransport({
+    host: smtpHost,
+    port: smtpPort,
+    secure: smtpSecure,
+    requireTLS: !smtpSecure,
+    auth: {
+      user: smtpUser,
+      pass,
+    },
+  });
+
+  cachedTransporter = transporter;
+  return transporter;
+}
+
+export { getTransporter };

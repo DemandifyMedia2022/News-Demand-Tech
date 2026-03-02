@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import type { ComponentType } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Header } from "@/components/ui/header-3";
@@ -13,13 +12,11 @@ import {
     Building2,
     Phone,
     Mail,
-    Send,
     Loader2,
     XCircle,
     CheckCircle2,
     Sparkles,
     ArrowRight,
-    MessageSquare,
     Zap,
     Headphones,
 } from "lucide-react";

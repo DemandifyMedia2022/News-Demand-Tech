@@ -1,5 +1,3 @@
-import { CmsDocument } from './types'; // Define types as needed
-
 export class CmsClient {
   private baseUrl: string;
   private apiKey: string;

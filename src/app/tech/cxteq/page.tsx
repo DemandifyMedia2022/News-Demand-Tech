@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Users, MessageSquare, TrendingUp, Headphones, Zap, Shield, Globe, CheckCircle, Star, ArrowRight, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram, ShieldCheck, HeartHandshake, Database, Calendar, Clock } from "lucide-react";
+import { ArrowUpRight, MessageSquare, ShieldCheck, HeartHandshake, Database, Calendar, Clock, Zap } from "lucide-react";
 import { Header } from "@/components/ui/header-3";
 import { Switcher } from "@/components/ui/switcher";
 import { CmsBlog } from "@/lib/types";
@@ -223,8 +223,4 @@ export default function CXTEQPage() {
       </main>
     </>
   );
-}
-
-function cn(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(" ");
 }

@@ -40,9 +40,13 @@ export async function GET(req: Request) {
     );
   }
 
-  const data = await res.json();
-  const result = Array.isArray(data?.result) ? data.result : [];
-  const match = result.find((doc: any) => doc?.slug === slug || doc?._id === slug);
+  const data: unknown = await res.json();
+  const dataObj = data as any;
+  const result = Array.isArray(dataObj?.result) ? dataObj.result : [];
+  const match: unknown = result.find((doc: unknown) => {
+    const docObj = doc as any;
+    return docObj?.slug === slug || docObj?._id === slug;
+  });
 
   if (!match) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });

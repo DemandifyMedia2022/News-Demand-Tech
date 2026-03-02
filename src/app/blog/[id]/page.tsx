@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ArrowUpRight, Clock, Calendar, Share2, Bookmark, ChevronDown, ChevronRight, Menu, X, List, HelpCircle } from "lucide-react";
+import { ArrowUpRight, Share2, ChevronDown, List, HelpCircle } from "lucide-react";
 import Link from "next/link";
 import { RichTextRenderer } from "@/components/rich-text-renderer";
 
@@ -12,7 +12,7 @@ interface BlogPostProps {
 }
 
 export default function BlogPost({ params }: BlogPostProps) {
-  const [post, setPost] = useState<any>(null);
+  const [post, setPost] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,8 +25,9 @@ export default function BlogPost({ params }: BlogPostProps) {
           setLoading(false);
           return;
         }
-        const data = await res.json();
-        setPost(data?.result || null);
+        const data: unknown = await res.json();
+        const postObj = (data as any)?.result;
+        setPost(postObj || null);
         setLoading(false);
       } catch {
         setPost(null);
@@ -51,12 +52,15 @@ export default function BlogPost({ params }: BlogPostProps) {
     );
   }
 
+  const postObj = post as any;
+
   /* ---------------- TOC ---------------- */
 
-  const extractTextFromLexicalNode = (node: any): string => {
+  const extractTextFromLexicalNode = (node: unknown): string => {
     if (!node) return "";
-    if (node.type === "text" && typeof node.text === "string") return node.text;
-    if (Array.isArray(node.children)) return node.children.map(extractTextFromLexicalNode).join("");
+    const nodeObj = node as any;
+    if (nodeObj.type === "text" && typeof nodeObj.text === "string") return nodeObj.text;
+    if (Array.isArray(nodeObj.children)) return nodeObj.children.map(extractTextFromLexicalNode).join("");
     return "";
   };
 
@@ -66,18 +70,22 @@ export default function BlogPost({ params }: BlogPostProps) {
       const items: Array<{ id: string; text: string; level: string }> = [];
       let i = 0;
 
-      const walk = (node: any) => {
+      const walk = (node: unknown) => {
+        const nodeObj = node as any;
         if (!node) return;
-        if (node.type === "heading") {
-          const tag = typeof node.tag === "string" ? node.tag : "h2";
+        if (nodeObj.type === "heading") {
+          const tag = typeof nodeObj.tag === "string" ? nodeObj.tag : "h2";
           const level = tag.replace(/^h/i, "");
-          const text = extractTextFromLexicalNode(node).trim();
+          const text = extractTextFromLexicalNode(nodeObj).trim();
           if (text) {
             items.push({ id: `heading-${i}`, text, level });
             i += 1;
           }
         }
-        if (Array.isArray(node.children)) node.children.forEach(walk);
+
+        if (Array.isArray(nodeObj.children)) {
+          nodeObj.children.forEach(walk);
+        }
       };
 
       walk(parsed?.root);
@@ -104,14 +112,15 @@ export default function BlogPost({ params }: BlogPostProps) {
     return items;
   };
 
-  const rawContent = typeof post?.content === "string" ? post.content : "";
+  const rawContent = typeof postObj?.content === "string" ? postObj.content : "";
   const isLexicalJson = (() => {
     if (!rawContent) return false;
     const trimmed = rawContent.trim();
     if (!trimmed.startsWith("{") && !trimmed.startsWith("[")) return false;
     try {
-      const parsed = JSON.parse(trimmed);
-      return Boolean(parsed && typeof parsed === "object" && (parsed as any).root);
+      const parsed: unknown = JSON.parse(trimmed);
+      const parsedObj = parsed as any;
+      return Boolean(parsed && typeof parsed === "object" && parsedObj.root);
     } catch {
       return false;
     }
@@ -137,7 +146,7 @@ export default function BlogPost({ params }: BlogPostProps) {
   /* ---------------- UI ---------------- */
 
   const normalizedFaq: Array<{ question: string; answer: string }> = (() => {
-    const raw = post?.faq ?? post?.faqs ?? post?.FAQ ?? post?.Faq;
+    const raw = postObj?.faq ?? postObj?.faqs ?? postObj?.FAQ ?? postObj?.Faq;
     if (!raw) return [];
 
     let value: unknown = raw;
@@ -179,8 +188,8 @@ export default function BlogPost({ params }: BlogPostProps) {
               {/* Featured Image */}
               <div className="w-full h-72 md:h-80 rounded-3xl overflow-hidden bg-[var(--surface)] shadow-lg">
                 <img
-                  src={post.image}
-                  alt={post.title}
+                  src={postObj.image}
+                  alt={postObj.title}
                   className="w-full h-full object-cover"
                 />
 
@@ -192,36 +201,35 @@ export default function BlogPost({ params }: BlogPostProps) {
               {/* CONTENT OVER IMAGE */}
               <div className="absolute bottom-0 left-0 w-full p-4 md:p-5">
                 <span className="inline-block mb-3 px-3 py-1 rounded-full bg-white/90 text-[var(--primary)] text-sm font-semibold">
-                  {post.category}
+                  {postObj.category}
                 </span>
 
                 <h1 className="text-3xl md:text-4xl font-semibold leading-tight text-white max-w-4xl">
-                  {post.title}
+                  {postObj.title}
                 </h1>
 
                 <p className="mt-3 text-base md:text-lg text-white/85 max-w-3xl">
-                  {post.excerpt}
+                  {postObj.excerpt}
                 </p>
 
                 {/* META ROW */}
                 <div className="flex flex-wrap items-center gap-6 px-8 py-4 bg-[var(--surface)] border-t border-[var(--border)] rounded-2xl mt-10">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-[var(--primary)] text-white text-sm font-semibold flex items-center justify-center">
-                      {(post.author || "A")
+                      {(postObj.author || "A")
                         .split(" ")
                         .filter(Boolean)
                         .map((n: string) => n[0])
                         .join("")}
                     </div>
-                    <span className="text-sm font-medium">{post.author || ""}</span>
+                    <div>
+                      <p className="text-sm font-medium text-[var(--foreground)]">{postObj.author}</p>
+                      <p className="text-xs text-[var(--muted-foreground)]">{postObj.publishDate} • {postObj.readTime}</p>
+                    </div>
                   </div>
 
-                  <span className="text-sm text-[var(--muted-foreground)]">
-                    {post.publishDate}
-                  </span>
-
-                  <span className="text-sm text-[var(--muted-foreground)]">
-                    {post.readTime}
+                  <span className="ml-auto text-[var(--muted-foreground)]">
+                    {postObj.readTime}
                   </span>
 
                   <button className="ml-auto p-2 rounded-lg hover:bg-[var(--surface-2)]">
@@ -238,7 +246,7 @@ export default function BlogPost({ params }: BlogPostProps) {
         <section className="max-w-8xl mx-auto px-6 py-6 grid grid-cols-1 lg:grid-cols-4 gap-6 mt-[-40px]">
 
           {/* TOC */}
-          {post.author && headings.length > 0 && (
+          {postObj.author && headings.length > 0 && (
             <aside className="hidden lg:block sticky top-3 h-fit glass rounded-xl p-4">
               <h3 className="font-semibold mb-3 flex items-center gap-2">
                 <List size={20} /> Contents
@@ -337,7 +345,7 @@ export default function BlogPost({ params }: BlogPostProps) {
                 <HelpCircle size={22} /> FAQs
               </h2>
               <div className="space-y-2">
-                {normalizedFaq.map((f: any, i: number) => (
+                {normalizedFaq.map((f: { question: string; answer: string }, i: number) => (
                   <FAQItem key={i} {...f} />
                 ))}
               </div>

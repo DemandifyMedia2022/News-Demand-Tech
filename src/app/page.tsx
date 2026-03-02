@@ -3,7 +3,6 @@
 import React from "react";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
-import { TrendingTopicsSection } from "@/components/trending-topics-section";
 import { RedHatBanner } from "@/components/red-hat-banner";
 import { FeaturedStoriesSection } from "@/components/featured-stories-section";
 import { NewsletterSignup } from "@/components/newsletter-signup";
@@ -19,7 +18,7 @@ type FeaturedBlog = {
 
 export default function Home() {
   const unoptimized = process.env.NODE_ENV === "development";
-  const [isUSMarket, setIsUSMarket] = React.useState(true); // US-based website
+  const [isUSMarket] = React.useState(true); // US-based website
   const [featured, setFeatured] = React.useState<FeaturedBlog | null>(null);
 
   React.useEffect(() => {
