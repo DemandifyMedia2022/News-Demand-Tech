@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button, FlowButton } from "@/components/ui/button";
+import { Button, FlowButton, ShimmerButton } from "@/components/ui/button";
 import { FlowButton2 } from "@/components/ui/button2";
 import { cn } from "@/lib/utils";
 import { MenuToggleIcon } from "@/components/menu-toggle-icon";
@@ -27,6 +27,7 @@ import {
 	UserCog,
 	Megaphone,
 	Search,
+	Sparkles as SparklesIcon,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -53,7 +54,7 @@ type HeaderProps = {
 };
 
 export function Header({ onSearchChange }: HeaderProps) {
-	const [open, setOpen] = React.useState(false);
+	const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 	const scrolled = useScroll(10);
 	const [searchTerm, setSearchTerm] = React.useState("");
 	const [currentDate, setCurrentDate] = React.useState(new Date());
@@ -80,53 +81,41 @@ export function Header({ onSearchChange }: HeaderProps) {
 			.toLowerCase();
 
 	React.useEffect(() => {
-		document.body.style.overflow = open ? "hidden" : "";
+		document.body.style.overflow = isMenuOpen ? "hidden" : "";
 
 		return () => {
 			document.body.style.overflow = "";
 		};
-	}, [open]);
+	}, [isMenuOpen]);
 
 	return (
 		<header
 			className={cn(
-				"fixed top-0 left-0 right-0 z-50 w-full border-b border-white/10 bg-white/95 backdrop-blur-sm transition-all",
-				scrolled && "shadow-lg"
+				"fixed top-0 left-0 right-0 z-50 w-full border-b border-black/5 bg-white/80 backdrop-blur-md transition-all duration-500",
+				scrolled ? "py-1 shadow-2xl shadow-blue-900/5 bg-white/90" : "py-2"
 			)}
 		>
-			<nav className="flex h-18 items-center px-3 md:px-6 gap-4">
+			<nav className="flex h-16 items-center px-4 md:px-8 gap-6 max-w-[1600px] mx-auto">
 
 				{/* Logo */}
-				<Link href="/" className="flex items-center gap-2">
-					<Image
-						src="/img/D_logo.svg"
-						alt="Demand Teq"
-						width={48}
-						height={48}
-						className="h-10 w-10 md:h-12 md:w-12"
-						priority
-					/>
+				<Link href="/" className="flex items-center gap-2 group">
+					<div className="relative">
+						<div className="absolute inset-0 bg-blue-600/20 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+						<Image
+							src="/img/D_logo.svg"
+							alt="Demand Teq"
+							width={48}
+							height={48}
+							className="h-10 w-10 md:h-11 md:w-11 relative transform group-hover:scale-110 transition-transform duration-300"
+							priority
+						/>
+					</div>
 				</Link>
 
-				{/* Date / Time */}
-				<div className="flex-1 flex justify-center">
-					<button
-						onClick={() => setShowTime(!showTime)}
-						className="group rounded-full border border-black/20 bg-gradient-to-r from-white/80 to-white/60 backdrop-blur-sm px-4 py-2 text-sm font-medium text-black/80 hover:border-black/30 hover:bg-gradient-to-r hover:from-white hover:to-white/90 hover:text-black hover:shadow-md transition-all duration-300"
-					>
-						<span className="flex items-center gap-2">
-							<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-							</svg>
-							{showTime ? formatTime(currentDate) : formatDate(currentDate)}
-						</span>
-					</button>
-				</div>
-
 				{/* Desktop Nav */}
-				<div className="hidden md:flex items-center gap-6">
+				<div className="hidden lg:flex items-center gap-2">
 					<NavigationMenu>
-						<NavigationMenuList className="space-x-5">
+						<NavigationMenuList className="space-x-2">
 
 							<NavigationMenuLink asChild>
 								<Link href="/" className={navItemClass}>Home</Link>
@@ -142,10 +131,8 @@ export function Header({ onSearchChange }: HeaderProps) {
 									Tech News
 								</NavigationMenuTrigger>
 
-
-
 								<NavigationMenuContent className="bg-transparent">
-									<ul className="grid grid-cols-2 gap-2 rounded-xl p-2 shadow-lg shadow-black/10">
+									<ul className="grid grid-cols-2 gap-2 rounded-2xl p-3 glass-premium shadow-2xl border-white/20 w-[400px]">
 										{techNewsLinks.map((item) => (
 											<li key={item.title}>
 												<ListItem {...item} />
@@ -156,23 +143,25 @@ export function Header({ onSearchChange }: HeaderProps) {
 							</NavigationMenuItem>
 
 							<NavigationMenuLink asChild>
-								<a href="/event" className={navItemClass}>Events</a>
+								<Link href="/event" className={navItemClass}>Events</Link>
 							</NavigationMenuLink>
 
 							<NavigationMenuLink asChild>
-								<a href="/about-us" className={navItemClass}>About-Us</a>
+								<Link href="/about-us" className={navItemClass}>About Us</Link>
 							</NavigationMenuLink>
 
 						</NavigationMenuList>
 					</NavigationMenu>
+				</div>
 
-					{/* Search */}
-					<div className="relative hidden lg:block">
-						<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black/60" />
+				{/* Search & Date */}
+				<div className="flex-1 flex items-center justify-end gap-4 max-w-xl ml-auto">
+					<div className="relative hidden sm:block flex-1 group">
+						<Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
 						<Input
 							type="search"
-							placeholder="Search blogs..."
-							className="h-9 rounded-full bg-black/10 border border-black/10 pl-9 text-slate-900 placeholder:text-black/60"
+							placeholder="Search insights..."
+							className="h-10 w-full rounded-full bg-slate-100/50 border-0 pl-11 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all duration-300"
 							value={searchTerm}
 							onChange={(e) => {
 								setSearchTerm(e.target.value);
@@ -180,32 +169,45 @@ export function Header({ onSearchChange }: HeaderProps) {
 							}}
 						/>
 					</div>
+
+					<button
+						onClick={() => setShowTime(!showTime)}
+						className="hidden md:flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-[11px] font-black uppercase tracking-widest text-slate-600 hover:border-blue-500/30 hover:bg-slate-50 transition-all"
+					>
+						<div className="h-1.5 w-1.5 rounded-full bg-blue-600 animate-pulse" />
+						{showTime ? formatTime(currentDate) : formatDate(currentDate)}
+					</button>
 				</div>
 
-				{/* Buttons */}
-				<div className="hidden md:flex gap-2">
-					<FlowButton text="Community" onClick={() => (window.location.href = "/community")} />
-					<FlowButton2 text="Contact Us" onClick={() => (window.location.href = "/contact-us")} />
+				{/* Action Buttons */}
+				<div className="hidden md:flex items-center gap-3">
+					<ShimmerButton text="Community" onClick={() => (window.location.href = "/community")} />
+					<FlowButton2 text="Contact" onClick={() => (window.location.href = "/contact-us")} />
 				</div>
 
 				{/* Mobile Toggle */}
 				<Button
 					size="icon"
-					variant="outline"
-					onClick={() => setOpen(!open)}
-					className="md:hidden ml-auto"
+					variant="ghost"
+					onClick={() => setIsMenuOpen(!isMenuOpen)}
+					className="md:hidden ml-auto hover:bg-slate-100 rounded-xl"
 				>
-					<MenuToggleIcon open={open} className="size-5" />
+					<MenuToggleIcon open={isMenuOpen} className="size-5" />
 				</Button>
 			</nav>
 
 			<BannerScroller />
 
-			<MobileMenu open={open}>
-				<Link href="/" className="p-2 text-black">Home</Link>
-				<Link href="/tech" className="p-2 text-black">Tech News</Link>
-				<Link href="/event" className="p-2 text-black">Events</Link>
-				<Link href="/about-us" className="p-2 text-black">About Us</Link>
+			<MobileMenu open={isMenuOpen}>
+				<div className="flex flex-col gap-4 p-4">
+					<Link href="/" className="text-xl font-bold p-2 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>Home</Link>
+					<Link href="/tech" className="text-xl font-bold p-2 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>Tech News</Link>
+					<Link href="/event" className="text-xl font-bold p-2 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>Events</Link>
+					<Link href="/about-us" className="text-xl font-bold p-2 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>About Us</Link>
+					<div className="pt-4 border-t border-slate-100 mt-4">
+						<ShimmerButton text="Join Community" className="w-full justify-center" onClick={() => (window.location.href = "/community")} />
+					</div>
+				</div>
 			</MobileMenu>
 		</header>
 	);

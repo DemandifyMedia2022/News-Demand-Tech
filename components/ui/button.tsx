@@ -36,7 +36,7 @@ const buttonVariants = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean
 }
 
@@ -68,7 +68,7 @@ export const FlowButton = React.forwardRef<HTMLButtonElement, FlowButtonProps>(
         ref={ref}
         onClick={onClick}
         className={cn(
-          "group relative overflow-hidden rounded-xl bg-[#1e3a8a] px-6 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#1e40af] hover:shadow-lg hover:shadow-[#1e3a8a]/25",
+          "group relative overflow-hidden rounded-xl bg-[#1e3a8a] px-6 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#1e40af] hover:shadow-lg hover:shadow-[#1e3a8a]/25 active:scale-95",
           className
         )}
         {...props}
@@ -80,5 +80,31 @@ export const FlowButton = React.forwardRef<HTMLButtonElement, FlowButtonProps>(
   }
 )
 FlowButton.displayName = "FlowButton"
+
+import { Sparkles } from "lucide-react";
+
+export const ShimmerButton = React.forwardRef<HTMLButtonElement, FlowButtonProps>(
+  ({ text, onClick, className, ...props }, ref) => {
+    return (
+      <button
+        ref={ref}
+        onClick={onClick}
+        className={cn(
+          "relative group overflow-hidden rounded-full px-6 py-2.5 text-sm font-bold text-white transition-all duration-300",
+          "hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(30,58,138,0.3)]",
+          className
+        )}
+        {...props}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1e3a8a] via-[#3b82f6] to-[#1e3a8a] bg-[length:200%_100%] animate-shimmer" />
+        <span className="relative z-10 flex items-center gap-2">
+          {text}
+          <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+        </span>
+      </button>
+    )
+  }
+)
+ShimmerButton.displayName = "ShimmerButton"
 
 export { Button, buttonVariants }

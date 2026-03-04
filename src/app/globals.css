@@ -10,23 +10,9 @@
 
 @font-face {
   font-family: 'PT Sans';
-  font-style: italic;
-  font-weight: 400;
-  src: local('PT Sans Italic'), url('/fonts/PTS56F.woff') format('woff');
-}
-
-@font-face {
-  font-family: 'PT Sans';
   font-style: normal;
   font-weight: 700;
   src: local('PT Sans Bold'), url('/fonts/PTS75F.woff') format('woff');
-}
-
-@font-face {
-  font-family: 'PT Sans';
-  font-style: italic;
-  font-weight: 700;
-  src: local('PT Sans Bold Italic'), url('/fonts/PTS76F.woff') format('woff');
 }
 
 @font-face {
@@ -236,12 +222,44 @@ button {
   }
 }
 
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
 .anim-floaty {
   animation: floaty 6s ease-in-out infinite;
 }
 
 .anim-drift {
   animation: drift 9s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 3s linear infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
 }
 
 /* ==================================================
@@ -259,4 +277,16 @@ img {
 ::selection {
   background-color: rgba(30, 58, 138, 0.20);
   color: #000000;
+}
+
+.glass-premium {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+.text-shadow-glow {
+  text-shadow: 0 0 8px rgba(30, 58, 138, 0.3);
 }

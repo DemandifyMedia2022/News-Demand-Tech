@@ -166,6 +166,23 @@ CREATE TABLE IF NOT EXISTS analytics (
 );
 
 -- -----------------------------------------------------
+-- Table: contact_messages
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS contact_messages (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(30),
+    company VARCHAR(100),
+    message TEXT NOT NULL,
+    consent BOOLEAN DEFAULT FALSE,
+    ip_address INET,
+    user_agent TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- -----------------------------------------------------
 -- Table: newsletters
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS newsletters (

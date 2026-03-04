@@ -131,17 +131,17 @@ export default function BlogPost({ params }: BlogPostProps) {
   const processedContent = isLexicalJson
     ? ""
     : rawContent.replace(
-        /<h([2-3])([^>]*)>(.*?)<\/h[2-3]>/g,
-        (
-          _match: string,
-          level: "2" | "3",
-          attrs: string,
-          text: string
-        ) => {
-          const index = headings.findIndex((h) => h.text === text.replace(/<[^>]*>/g, ""));
-          return `<h${level}${attrs} id="heading-${index}">${text}</h${level}>`;
-        }
-      );
+      /<h([2-3])([^>]*)>(.*?)<\/h[2-3]>/g,
+      (
+        _match: string,
+        level: "2" | "3",
+        attrs: string,
+        text: string
+      ) => {
+        const index = headings.findIndex((h) => h.text === text.replace(/<[^>]*>/g, ""));
+        return `<h${level}${attrs} id="heading-${index}">${text}</h${level}>`;
+      }
+    );
 
   /* ---------------- UI ---------------- */
 
@@ -269,10 +269,10 @@ export default function BlogPost({ params }: BlogPostProps) {
           {/* ARTICLE */}
           <article className="lg:col-span-3">
             <div className="relative glass rounded-3xl p-10 md:p-20 shadow-2xl neon-ring">
-              
+
               {/* Left accent border */}
               <div className="absolute left-0 top-0.5 h-full w-2 bg-gradient-to-b from-[var(--primary)] via-[var(--accent)] to-transparent rounded-l-3xl" />
-              
+
               {isLexicalJson ? (
                 <div className="relative z-10 space-y-12" style={{ fontSize: "1.20rem", lineHeight: "1.3" }}>
                   <RichTextRenderer content={rawContent} />
@@ -318,7 +318,7 @@ export default function BlogPost({ params }: BlogPostProps) {
                       .replace(
                         /<blockquote([^>]*)>(.*?)<\/blockquote>/g,
                         (match: string, attrs: string, text: string) => {
-                          return `<blockquote${attrs} style="font-size: 1.2rem; font-style: italic; border-left: 3px solid var(--primary); background: linear-gradient(to right, var(--primary)/8, transparent); padding: 1.2rem; margin: 1rem 0; color: var(--muted-foreground); border-radius: 0 0.55rem 0.55rem 0;">${text}</blockquote>`;
+                          return `<blockquote${attrs} style="font-size: 1.2rem; border-left: 3px solid var(--primary); background: linear-gradient(to right, var(--primary)/8, transparent); padding: 1.2rem; margin: 1rem 0; color: var(--muted-foreground); border-radius: 0 0.55rem 0.55rem 0;">${text}</blockquote>`;
                         }
                       )
                       .replace(/<code([^>]*)>(.*?)<\/code>/g, (match: string, attrs: string, text: string) => {
@@ -330,7 +330,7 @@ export default function BlogPost({ params }: BlogPostProps) {
                   }}
                 />
               )}
-              
+
               {/* Bottom decorative gradient */}
               <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[var(--background)] via-[var(--background)]/90 to-transparent rounded-b-3xl pointer-events-none" />
             </div>
