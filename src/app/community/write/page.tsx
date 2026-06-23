@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Header } from "@/components/ui/header-3";
-import Footer from "@/components/footer";
+import { Footer } from "@/components/footer";
 import { useRouter } from "next/navigation";
 
 export default function WritePage() {

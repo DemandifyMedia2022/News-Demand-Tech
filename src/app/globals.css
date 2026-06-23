@@ -290,3 +290,20 @@ img {
 .text-shadow-glow {
   text-shadow: 0 0 8px rgba(30, 58, 138, 0.3);
 }
+
+/* ==================================================
+   ANIMATIONS & UTILITIES
+================================================== */
+@keyframes ticker {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-ticker {
+  animation: ticker 60s linear infinite;
+}

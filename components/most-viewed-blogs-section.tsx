@@ -7,7 +7,9 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 interface MostViewedBlog {
   _id?: string;
@@ -123,7 +125,7 @@ export function MostViewedBlogsSection() {
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-r from-[#1e3a8a]/15 to-[#1e40af]/15 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-l from-[#1e40af]/10 to-[#1e3a8a]/10 rounded-full blur-2xl" />
       </div>
-      
+
       <div className="mx-auto max-w-7xl px-4 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-8 sm:mb-12">
@@ -149,7 +151,7 @@ export function MostViewedBlogsSection() {
               >
                 {/* Modern overlay */}
                 <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a8a]/3 via-transparent to-[#1e40af]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                
+
                 <div className="flex flex-col md:flex-row">
                   {/* Image */}
                   <div className="relative h-48 md:h-auto md:w-1/3 overflow-hidden">
@@ -160,7 +162,7 @@ export function MostViewedBlogsSection() {
                       className="object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                    
+
                     {/* Category badge */}
                     <div className="absolute top-4 left-4 z-20">
                       <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-white/90 backdrop-blur-sm text-[#1e3a8a] border border-white/30">
@@ -191,15 +193,15 @@ export function MostViewedBlogsSection() {
                         </div>
                         <span className="text-xs text-gray-600">{blog.author}</span>
                       </div>
-                      
-                      <Link 
+
+                      <Link
                         href={`/blog/${blog.slug || blog._id}`}
                         className="inline-flex items-center text-[#1e3a8a] font-semibold text-xs hover:text-[#1e40af] transition-all duration-300 group"
                       >
                         Read more
-                        <ArrowUpRight 
-                          size={14} 
-                          className="ml-1 transition-all duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" 
+                        <ArrowUpRight
+                          size={14}
+                          className="ml-1 transition-all duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
                         />
                       </Link>
                     </div>
@@ -215,7 +217,7 @@ export function MostViewedBlogsSection() {
               <div className="group relative bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-lg rounded-2xl border border-white/40 shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden cursor-pointer h-full">
                 {/* Modern overlay */}
                 <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a8a]/3 via-transparent to-[#1e40af]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                
+
                 {/* Image */}
                 <div className="relative h-64 overflow-hidden">
                   <Image
@@ -225,7 +227,7 @@ export function MostViewedBlogsSection() {
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                  
+
                   {/* Category badge */}
                   <div className="absolute top-4 left-4 z-20">
                     <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-white/90 backdrop-blur-sm text-[#1e3a8a] border border-white/30">
@@ -256,15 +258,15 @@ export function MostViewedBlogsSection() {
                       </div>
                       <span className="text-xs text-gray-600">{blogs[2].author}</span>
                     </div>
-                    
-                    <Link 
+
+                    <Link
                       href={`/blog/${blogs[2].slug || blogs[2]._id}`}
                       className="inline-flex items-center text-[#1e3a8a] font-semibold text-xs hover:text-[#1e40af] transition-all duration-300 group"
                     >
                       Read more
-                      <ArrowUpRight 
-                        size={14} 
-                        className="ml-1 transition-all duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" 
+                      <ArrowUpRight
+                        size={14}
+                        className="ml-1 transition-all duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
                       />
                     </Link>
                   </div>

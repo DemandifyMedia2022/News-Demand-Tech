@@ -186,7 +186,11 @@ export default function TrendingTopicsPage() {
                         {/* Mobile Dropdown */}
                         <div className="block sm:hidden max-w-md mx-auto relative z-[9999] overflow-visible">
                             <CategoryDropdown
-                                options={CATEGORIES}
+                                options={CATEGORIES.map(cat => ({
+                                    value: cat,
+                                    label: cat,
+                                    icon: (CATEGORY_STYLES[cat as keyof typeof CATEGORY_STYLES]?.icon || Sparkles)
+                                }))}
                                 activeOption={activeCategory}
                                 onChange={setActiveCategory}
                             />

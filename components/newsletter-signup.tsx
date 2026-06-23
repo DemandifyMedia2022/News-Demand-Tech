@@ -6,7 +6,9 @@ import { ArrowUpRight, Mail, Users, X } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export function NewsletterSignup() {
   const sectionRef = useRef<HTMLDivElement>(null);
