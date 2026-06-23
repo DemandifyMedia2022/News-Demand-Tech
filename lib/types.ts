@@ -1,24 +1,28 @@
-export type CmsDocument = Record<string, unknown>;
+export interface BlogPost {
+  _id: string;
+  _type: 'blog';
+  title: string;
+  slug: string;
+  excerpt?: string;
+  content?: string; // JSON string from Lexical editor
+  image?: string;
+  published: boolean;
+  _createdAt: string;
+}
 
-export type CmsQueryResult<T = CmsDocument> = {
-  result: T[];
-};
-
-export type CmsBlog = {
+export interface CmsBlog {
   _id?: string;
-  _type?: string;
-  title?: string;
+  id?: string;
   slug?: string;
+  title?: string;
   excerpt?: string;
   content?: string;
   image?: string;
-  author?: string;
-  readTime?: string;
-  publishDate?: string;
   category?: string;
   subcategory?: string;
   subcategories?: string[];
-  tags?: string[];
-  faq?: { question: string; answer: string }[];
+  author?: string;
+  publishDate?: string;
+  readTime?: string;
   published?: boolean;
-};
+}

@@ -1,213 +1,368 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
+import { ArrowUpRight, Clock, Calendar, Hash, Users, Sparkles } from "lucide-react";
+import { Header } from "@/components/ui/header-3";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { RedHatBanner } from "@/components/red-hat-banner";
-import { FeaturedStoriesSection } from "@/components/featured-stories-section";
 import { NewsletterSignup } from "@/components/newsletter-signup";
-import { FloatingBanner } from "@/components/floating-banner";
-import { CompactGoogleBanner } from "@/components/compact-google-banner";
 
-type FeaturedBlog = {
+interface Article {
   _id?: string;
+  id?: string;
   slug?: string;
+  category?: string;
+  subcategory?: string;
+  readTime?: string;
+  publishDate?: string;
   title?: string;
+  excerpt?: string;
   image?: string;
-};
+  author?: string;
+  author_name?: string; // For community posts
+  created_at?: string; // For community posts
+}
 
 export default function Home() {
-  const unoptimized = process.env.NODE_ENV === "development";
-  const [isUSMarket] = React.useState(true); // US-based website
-  const [featured, setFeatured] = React.useState<FeaturedBlog | null>(null);
+  const [editorialBlogs, setEditorialBlogs] = useState<Article[]>([]);
+  const [communityBlogs, setCommunityBlogs] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
-    const run = async () => {
+  useEffect(() => {
+    const fetchData = async () => {
       try {
-        const res = await fetch("/api/cms/query?type=blog&limit=1&offset=0", { cache: "no-store" });
-        if (!res.ok) return;
-        const data = await res.json();
-        const result = Array.isArray(data?.result) ? data.result : [];
-        setFeatured(result[0] || null);
-      } catch {
-        // ignore
+        // Fetch Editorial Blogs
+        const editorialRes = await fetch("/api/cms/query?type=blog&limit=10", { cache: "no-store" });
+        const editorialData = await editorialRes.json();
+        setEditorialBlogs(editorialData?.result || []);
+
+        // Fetch Community Blogs
+        const communityRes = await fetch("/api/community/posts", { cache: "no-store" });
+        const communityData = await communityRes.json();
+        setCommunityBlogs(communityData?.posts?.slice(0, 6) || []);
+      } catch (error) {
+        console.error("Home page data fetch error:", error);
+      } finally {
+        setLoading(false);
       }
     };
-    run();
+    fetchData();
   }, []);
 
-  // Dynamic content based on market
-  const marketContent = {
-    heroTitle: isUSMarket 
-      ? "Signal over noise for modern US B2B decision-makers."
-      : "Signal over noise for modern B2B decision-makers.",
-    heroDescription: isUSMarket
-      ? "Strategy, systems, and signals across demand, CX, HR, and fintech — built for US teams shaping the next decade."
-      : "Strategy, systems, and signals across demand, CX, HR, and fintech — built for teams shaping the next decade.",
-    trendingLabel: isUSMarket ? "US Trending Topics" : "Trending Topics",
-    browseCategories: isUSMarket ? "Browse US Categories" : "Browse categories"
-  };
+  const highlights = editorialBlogs.slice(0, 3);
+  const featured = editorialBlogs.slice(0, 3);
+  const latestNews = editorialBlogs.slice(3, 9);
 
   return (
     <>
-      <main className="relative overflow-hidden bg-[var(--background)]">
-        {/* Floating Banner - US Market */}
-        {isUSMarket && <FloatingBanner />}
-        
-        <div className="pointer-events-none absolute -left-40 -top-40 h-[34rem] w-[34rem] rounded-full bg-[rgba(30,58,138,0.08)] blur-3xl" />
-        <div className="pointer-events-none absolute -right-56 top-32 h-[40rem] w-[40rem] rounded-full bg-[rgba(30,58,138,0.06)] blur-3xl" />
-        <div className="pointer-events-none absolute left-1/3 top-[52rem] h-[28rem] w-[28rem] rounded-full bg-[rgba(30,58,138,0.04)] blur-3xl" />
+      <Header />
+      <main className="relative bg-[var(--background)] pt-24 overflow-hidden">
+        {/* Decorative Backgrounds */}
+        <div className="pointer-events-none absolute -left-40 top-0 h-[34rem] w-[34rem] rounded-full bg-blue-600/5 blur-3xl" />
+        <div className="pointer-events-none absolute -right-56 top-32 h-[40rem] w-[40rem] rounded-full bg-blue-600/5 blur-3xl" />
 
         {/* Hero Section */}
-        <section className="relative pt-16 sm:pt-20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 pb-6 sm:pb-8 mt-10">
-            {/* Trending Topics */}
-            <div>
-             <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-2 mt-0">
+        <section className="relative py-12 md:py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+              {/* Left Side: Content */}
+              <div className="lg:col-span-7 space-y-8">
+                <div className="inline-flex items-center gap-2 rounded-full border border-blue-600/20 bg-blue-50 px-4 py-2">
+                  <span className="h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
+                  <span className="text-sm font-bold text-blue-900 uppercase tracking-wider">Premium Tech Insights</span>
+                </div>
+                <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 leading-[1.1] tracking-tight">
+                  Signal over noise for modern <span className="text-blue-600">B2B decision-makers.</span>
+                </h1>
+                <p className="text-lg md:text-xl text-gray-600 max-w-2xl leading-relaxed">
+                  Strategy, systems, and signals across demand, CX, HR, and fintech — built for teams shaping the next decade.
+                </p>
+                <div className="flex flex-wrap gap-4">
+                  <Link href="/tech">
+                    <Button className="h-12 px-8 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-600/20 transition-all hover:scale-105">
+                      Explore News
+                    </Button>
+                  </Link>
+                  <Link href="/event">
+                    <Button variant="outline" className="h-12 px-8 rounded-xl border-gray-200 text-gray-900 font-bold hover:bg-gray-50 transition-all">
+                      Upcoming Events
+                    </Button>
+                  </Link>
+                </div>
+              </div>
 
-                <span className="h-2 w-2 rounded-full bg-[#1e3a8a] animate-pulse" />
-                <span className="text-sm font-semibold text-black">{marketContent.trendingLabel}</span>
+              {/* Right Side: Highlights Box */}
+              <div className="lg:col-span-5">
+                <Card className="border-gray-100 shadow-2xl overflow-hidden bg-white/70 backdrop-blur-xl">
+                  <CardContent className="p-0">
+                    <div className="bg-gray-50/50 p-6 border-b border-gray-100">
+                      <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                        <Sparkles className="w-5 h-5 text-blue-600" />
+                        Today&apos;s Highlights
+                      </h2>
+                    </div>
+                    <div className="divide-y divide-gray-100">
+                      {highlights.length > 0 ? (
+                        highlights.map((post, i) => (
+                          <Link key={post._id || i} href={`/blog/${post.slug || post._id}`} className="block p-6 hover:bg-blue-50/30 transition-colors group">
+                            <span className="text-[10px] uppercase font-bold text-blue-600 tracking-widest block mb-2">{post.category}</span>
+                            <h3 className="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
+                              {post.title}
+                            </h3>
+                          </Link>
+                        ))
+                      ) : (
+                        <div className="p-6 text-gray-400 text-sm italic">Loading highlights...</div>
+                      )}
+                    </div>
+                    <div className="p-6 bg-gray-50/30">
+                      <Link href="/tech" className="text-sm font-bold text-blue-600 hover:underline flex items-center gap-2">
+                        Read All Trending Stories <ArrowUpRight className="w-4 h-4" />
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
+          </div>
+        </section>
 
-           <div className="grid max-w-7xl items-start gap-6 md:gap-10 md:grid-cols-2 mt-4 sm:mt-5">
-             <div className="relative">
-                <h1 className="text-balance text-2xl sm:text-3xl md:text-4xl font-semibold leading-[1.01] tracking-tight">
-                  <span className="text-gradient">Signal over noise</span>
-                  <span className="text-black"> for modern B2B decision-makers.</span>
-                </h1>
+        {/* Tech Verticals Grid */}
+        <section className="py-12 border-y border-gray-100 bg-white/50">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                { name: "HRTeq", desc: "Human Resources Tech", href: "/tech/hrteq", color: "bg-blue-600", label: "HR" },
+                { name: "MarTeq", desc: "Marketing Technology", href: "/tech/marteq", color: "bg-indigo-600", label: "MAR" },
+                { name: "FinTeq", desc: "Financial Innovations", href: "/tech/finteq", color: "bg-cyan-600", label: "FIN" },
+                { name: "CXTeq", desc: "Customer Experience", href: "/tech/cxteq", color: "bg-blue-500", label: "CX" },
+              ].map((category) => (
+                <Link key={category.name} href={category.href} className="group">
+                  <Card className="hover:border-blue-600/50 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <CardContent className="p-6 flex items-center gap-4">
+                      <div className={`h-12 w-12 shrink-0 rounded-xl ${category.color} flex items-center justify-center text-white font-bold text-sm shadow-inner`}>
+                        {category.label}
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{category.name}</h3>
+                        <p className="text-xs text-gray-500">{category.desc}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
 
-                <p className="mt-3 sm:mt-4 max-w-lg text-sm sm:text-base text-[color:var(--muted-foreground)]">
-                  {marketContent.heroDescription}
-                </p>
-
-                <div className="mt-3 sm:mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <button className="inline-flex h-9 sm:h-10 items-center justify-center gap-2 rounded-2xl bg-[#1e3a8a] px-4 sm:px-6 text-sm font-semibold text-white shadow-lg transition-colors hover:bg-[#1e40af]">
-                    Enter the signal
-                    <ArrowUpRight size={16} />
-                  </button>
-                  <div className="inline-flex h-9 sm:h-10 items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] px-4 sm:px-6 text-sm font-semibold text-black">
-                    {marketContent.browseCategories}
-                  </div>
-                </div>
-
-                {/* Red Hat Banner */}
-                <div className="mt-6 sm:mt-8">
-                  <RedHatBanner />
-                </div>
-                           
+        {/* Featured Stories */}
+        <section className="py-20 md:py-28">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="text-center mb-16 space-y-4">
+              <div className="inline-flex items-center gap-2 rounded-full border border-blue-600/20 bg-blue-50 px-4 py-2">
+                <span className="text-xs font-bold text-blue-900 uppercase tracking-widest">In-Depth Analysis</span>
               </div>
+              <h2 className="text-3xl md:text-5xl font-bold text-gray-900">Featured Stories</h2>
+              <div className="w-20 h-1.5 bg-blue-600 mx-auto rounded-full" />
+            </div>
 
-              <div className="relative">
-                {featured?.image ? (
-                  <Image
-                    src={featured.image}
-                    alt={featured.title || "Featured blog"}
-                    width={400}
-                    height={300}
-                    className="w-full h-auto max-w-[400px] rounded-2xl shadow-2xl"
-                    unoptimized={unoptimized}
-                  />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+              {featured.length > 0 ? (
+                featured.map((post, i) => (
+                  <Card key={post._id || i} className="group overflow-hidden border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-500 rounded-3xl">
+                    <div className="relative h-64 overflow-hidden">
+                      <Image
+                        src={post.image || "/img/placeholder.webp"}
+                        alt={post.title || ""}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 to-transparent" />
+                      <div className="absolute top-4 left-4">
+                        <span className="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full text-[10px] font-bold text-blue-600 uppercase tracking-widest border border-white/20 shadow-sm">
+                          {post.category}
+                        </span>
+                      </div>
+                    </div>
+                    <CardContent className="p-8 space-y-4">
+                      <div className="flex items-center gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                        <div className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {post.readTime || "5 MIN"}</div>
+                        <div className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> {post.publishDate}</div>
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors leading-tight line-clamp-2">
+                        {post.title}
+                      </h3>
+                      <p className="text-gray-500 text-sm leading-relaxed line-clamp-3">
+                        {post.excerpt}
+                      </p>
+                      <div className="pt-4 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-[10px]">
+                            {post.author ? post.author.charAt(0) : "A"}
+                          </div>
+                          <span className="text-xs font-bold text-gray-700">{post.author}</span>
+                        </div>
+                        <Link href={`/blog/${post.slug || post._id}`} className="text-blue-600 font-bold text-sm flex items-center gap-1 group/link">
+                          Read article <ArrowUpRight className="w-4 h-4 transition-transform group-hover/link:translate-x-1 group-hover/link:-translate-y-1" />
+                        </Link>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                [1, 2, 3].map((n) => <div key={n} className="h-[500px] rounded-3xl bg-gray-50 animate-pulse border border-gray-100" />)
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* Latest Tech News (Mixed Feed) */}
+        <section className="py-20 bg-gray-50/50">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="flex items-center justify-between mb-12 border-b border-gray-200 pb-6">
+              <h2 className="text-3xl font-bold text-gray-900">Latest Tech News</h2>
+              <Link href="/tech" className="text-blue-600 font-bold flex items-center gap-1 hover:underline">
+                View All <ArrowUpRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+              {/* Main Feed */}
+              <div className="lg:col-span-8 space-y-6">
+                {latestNews.length > 0 ? (
+                  latestNews.map((post, i) => (
+                    <Link key={post._id || i} href={`/blog/${post.slug || post._id}`} className="group block">
+                      <Card className="bg-white border-transparent hover:border-blue-600/20 hover:shadow-xl shadow-sm transition-all rounded-2xl overflow-hidden">
+                        <CardContent className="p-0 flex flex-col sm:flex-row h-full">
+                          <div className="relative w-full sm:w-1/3 h-48 sm:h-auto overflow-hidden">
+                            <Image
+                              src={post.image || "/img/placeholder.webp"}
+                              alt={post.title || ""}
+                              fill
+                              className="object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                            <div className="absolute top-3 left-3">
+                              <span className="bg-blue-600 text-white text-[9px] font-bold px-2 py-1 rounded uppercase tracking-tighter">
+                                {post.category}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="p-6 sm:p-8 flex-1 flex flex-col justify-center space-y-3">
+                            <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors leading-snug line-clamp-2">
+                              {post.title}
+                            </h3>
+                            <p className="text-gray-500 text-sm line-clamp-2 leading-relaxed">
+                              {post.excerpt}
+                            </p>
+                            <div className="flex items-center gap-4 text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-widest">
+                              <span>BY {post.author}</span>
+                              <span className="h-1 w-1 rounded-full bg-gray-300" />
+                              <span>{post.publishDate}</span>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  ))
                 ) : (
-                  <div className="w-full max-w-[400px] h-[300px] rounded-2xl bg-[color:var(--surface-2)] border border-[color:var(--border)] shadow-2xl" />
+                  [1, 2, 3].map((n) => <div key={n} className="h-40 rounded-2xl bg-white animate-pulse" />)
                 )}
               </div>
-            </div>
-          </div>
-        </section>
 
-        {/* Category Cards Section */}
-        <section className="relative py-2 overflow-hidden">
-          {/* Background decoration - matching hero section */}
-          <div className="pointer-events-none absolute -left-32 top-0 h-[30rem] w-[30rem] rounded-full bg-[rgba(30,58,138,0.06)] blur-3xl" />
-          <div className="pointer-events-none absolute -right-40 bottom-0 h-[35rem] w-[35rem] rounded-full bg-[rgba(30,58,138,0.05)] blur-3xl" />
-          
-          <div className="mx-auto max-w-7xl px-4 relative z-10">
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 rounded-full border-2 border-[var(--primary)]/20 bg-[var(--primary)]/5 px-4 py-2 mb-4">
-                <span className="h-2 w-2 rounded-full bg-[var(--primary)] animate-pulse" />
-                <span className="text-sm font-bold text-[var(--primary)] uppercase tracking-wider">Explore Categories</span>
-              </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-                <span className="bg-gradient-to-r from-[var(--primary)] via-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                  Discover Our Solutions
-                </span>
-              </h2>
-              <div className="w-24 h-1 bg-gradient-to-r from-[var(--primary)] to-indigo-600 mx-auto rounded-full"></div>
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-              {/* HRTEQ Card */}
-              <div className="group relative overflow-hidden rounded-2xl bg-white border border-[color:var(--border)] p-5 transition-all duration-300 hover:shadow-xl hover:border-[#1e3a8a]">
-                <div className="mb-3">
-                  <div className="h-12 w-12 rounded-xl bg-[#1e3a8a] flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">HR</span>
+              {/* Sidebar: Promotion/Banner */}
+              <div className="lg:col-span-4 space-y-8">
+                <div className="sticky top-28 space-y-10">
+                  <RedHatBanner className="max-w-full !h-[300px] !shadow-2xl" />
+
+                  {/* Trending Topics List */}
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                      <Hash className="w-5 h-5 text-blue-600" />
+                      Trending Topics
+                    </h3>
+                    <div className="space-y-3">
+                      {[
+                        { name: "AI & Machine Learning", count: "2.4k" },
+                        { name: "Cybersecurity", count: "1.8k" },
+                        { name: "Blockchain", count: "1.1k" },
+                        { name: "Cloud Strategy", count: "950" }
+                      ].map((topic) => (
+                        <div key={topic.name} className="flex items-center justify-between p-4 rounded-xl bg-white border border-gray-100 group cursor-pointer hover:border-blue-600/30 transition-all">
+                          <span className="text-sm font-bold text-gray-700 group-hover:text-blue-600 transition-colors">#{topic.name}</span>
+                          <span className="text-[11px] font-black text-gray-400 uppercase tracking-tighter bg-gray-50 px-2 py-0.5 rounded">{topic.count} ARTICLES</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <h3 className="text-lg font-bold text-black mb-2">HRTEQ</h3>
-                <p className="text-sm text-[color:var(--muted-foreground)] mb-3">Human Resources Technology insights and trends</p>
-                <a href="/tech/hrteq" className="inline-flex items-center text-[#1e3a8a] font-semibold text-sm hover:text-[#1e40af]">
-                  Explore HRTEQ
-                  <ArrowUpRight size={16} className="ml-1" />
-                </a>
-              </div>
-
-              {/* MARTEQ Card */}
-              <div className="group relative overflow-hidden rounded-2xl bg-white border border-[color:var(--border)] p-5 transition-all duration-300 hover:shadow-xl hover:border-[#1e3a8a]">
-                <div className="mb-3">
-                  <div className="h-12 w-12 rounded-xl bg-[#1e3a8a] flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">MAR</span>
-                  </div>
-                </div>
-                <h3 className="text-lg font-bold text-black mb-2">MARTEQ</h3>
-                <p className="text-sm text-[color:var(--muted-foreground)] mb-3">Marketing Technology and automation strategies</p>
-                <a href="/tech/marteq" className="inline-flex items-center text-[#1e3a8a] font-semibold text-sm hover:text-[#1e40af]">
-                  Explore MARTEQ
-                  <ArrowUpRight size={16} className="ml-1" />
-                </a>
-              </div>
-
-              {/* FINTEQ Card */}
-              <div className="group relative overflow-hidden rounded-2xl bg-white border border-[color:var(--border)] p-5 transition-all duration-300 hover:shadow-xl hover:border-[#1e3a8a]">
-                <div className="mb-3">
-                  <div className="h-12 w-12 rounded-xl bg-[#1e3a8a] flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">FIN</span>
-                  </div>
-                </div>
-                <h3 className="text-lg font-bold text-black mb-2">FINTEQ</h3>
-                <p className="text-sm text-[color:var(--muted-foreground)] mb-3">Financial Technology innovations and analysis</p>
-                <a href="/tech/finteq" className="inline-flex items-center text-[#1e3a8a] font-semibold text-sm hover:text-[#1e40af]">
-                  Explore FINTEQ
-                  <ArrowUpRight size={16} className="ml-1" />
-                </a>
-              </div>
-
-              {/* CXTEQ Card */}
-              <div className="group relative overflow-hidden rounded-2xl bg-white border border-[color:var(--border)] p-5 transition-all duration-300 hover:shadow-xl hover:border-[#1e3a8a]">
-                <div className="mb-3">
-                  <div className="h-12 w-12 rounded-xl bg-[#1e3a8a] flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">CX</span>
-                  </div>
-                </div>
-                <h3 className="text-lg font-bold text-black mb-2">CXTEQ</h3>
-                <p className="text-sm text-[color:var(--muted-foreground)] mb-3">Customer Experience technology and strategies</p>
-                <a href="/tech/cxteq" className="inline-flex items-center text-[#1e3a8a] font-semibold text-sm hover:text-[#1e40af]">
-                  Explore CXTEQ
-                  <ArrowUpRight size={16} className="ml-1" />
-                </a>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Compact Google Banner */}
-        <CompactGoogleBanner />
+        {/* Recent Publications (Community Feed) */}
+        <section className="py-24 md:py-32">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+              <div className="space-y-4">
+                <div className="inline-flex items-center gap-2 rounded-full border border-blue-600/20 bg-blue-50 px-4 py-2">
+                  <Users className="w-4 h-4 text-blue-600" />
+                  <span className="text-xs font-bold text-blue-900 uppercase tracking-widest">Community Voice</span>
+                </div>
+                <h2 className="text-4xl font-bold text-gray-900">Recent Publications</h2>
+                <p className="text-gray-500 max-w-xl text-lg">
+                  Direct insights and stories shared by our community of technology experts and enthusiasts.
+                </p>
+              </div>
+              <Link href="/community">
+                <Button variant="outline" className="rounded-xl border-gray-200 font-bold px-8">
+                  View All Community Stream
+                </Button>
+              </Link>
+            </div>
 
-        
-        {/* Featured Stories Section */}
-        <FeaturedStoriesSection />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {communityBlogs.length > 0 ? (
+                communityBlogs.map((post, i) => (
+                  <Link key={post._id || post.id || i} href={`/community/${post.slug}`} className="group">
+                    <Card className="h-full bg-white border-gray-100 hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden flex flex-col">
+                      <div className="p-8 flex-1 space-y-4">
+                        <div className="flex items-center gap-2 text-[10px] font-black text-blue-600 uppercase tracking-widest mb-2">
+                          <span>{post.category}</span>
+                          <span className="text-gray-300">•</span>
+                          <span>{new Date(post.created_at || "").toLocaleDateString()}</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors leading-relaxed line-clamp-2">
+                          {post.title}
+                        </h3>
+                        <p className="text-gray-500 text-sm line-clamp-3 leading-relaxed">
+                          {post.excerpt}
+                        </p>
+                      </div>
+                      <div className="px-8 py-6 border-t border-gray-50 bg-gray-50/30 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="h-9 w-9 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-sm uppercase">
+                            {post.author_name ? post.author_name.charAt(0) : "U"}
+                          </div>
+                          <span className="text-xs font-bold text-gray-800">{post.author_name}</span>
+                        </div>
+                        <ArrowUpRight className="w-5 h-5 text-gray-300 transition-colors group-hover:text-blue-600" />
+                      </div>
+                    </Card>
+                  </Link>
+                ))
+              ) : (
+                <div className="col-span-full py-20 text-center text-gray-400 italic bg-gray-50 rounded-3xl border border-gray-100 border-dashed">
+                  Be the first to share your voice in our community.
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
 
-        {/* Newsletter Signup Section */}
         <NewsletterSignup />
       </main>
     </>

@@ -19,9 +19,9 @@ export async function GET(req: Request) {
     );
   }
 
-  const cmsUrl = new URL(`${baseUrl.replace(/\/+$/, "")}/query`);
+  const cmsUrl = new URL(`${baseUrl.replace(/\/+$/, "")}/api/cms/query`);
   cmsUrl.searchParams.set("type", "blog");
-  cmsUrl.searchParams.set("limit", "200");
+  cmsUrl.searchParams.set("limit", "500");
   cmsUrl.searchParams.set("offset", "0");
 
   const res = await fetch(cmsUrl.toString(), {
@@ -35,22 +35,27 @@ export async function GET(req: Request) {
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     return NextResponse.json(
-      { error: "CMS upstream error", status: res.status, body: text },
+      { error: "CMS upstream error", status: res.status, body: text, url: cmsUrl.toString() },
       { status: 502 }
     );
   }
 
-  const data: unknown = await res.json();
-  const dataObj = data as any;
-  const result = Array.isArray(dataObj?.result) ? dataObj.result : [];
-  const match: unknown = result.find((doc: unknown) => {
-    const docObj = doc as any;
-    return docObj?.slug === slug || docObj?._id === slug;
+  const data: any = await res.json();
+  const rawResult = Array.isArray(data?.result) ? data.result : [];
+
+  const match: any = rawResult.find((doc: any) => {
+    return doc?.slug === slug || doc?._id === slug;
   });
 
   if (!match) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+
+  // Prefix image if found
+  if (match.image && match.image.startsWith("/")) {
+    match.image = `${baseUrl.replace(/\/+$/, "")}${match.image}`;
+  }
+
 
   if (!sanitizePostTaxonomy(match)) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });

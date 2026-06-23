@@ -1,60 +1,75 @@
 import React from 'react';
 
-const RichTextRenderer = ({
-  content,
-  headingIdPrefix = "heading",
-}: {
-  content?: string;
-  headingIdPrefix?: string;
-}) => {
+export function RichTextRenderer({ content }: { content?: string }) {
   if (!content) return null;
 
   let validJson;
   try {
     validJson = JSON.parse(content);
-  } catch {
+  } catch (e) {
+    // Fallback if it's plain text or HTML string (legacy)
     return <div dangerouslySetInnerHTML={{ __html: content }} />;
   }
 
-  const renderNode = ((headingCounter) => (node: unknown, index: number): React.ReactNode => {
+  // Recursive renderer for Lexical JSON
+  const renderNode = (node: any, index: number): React.ReactNode => {
     if (!node) return null;
-    const nodeObj = node as any;
-    if (nodeObj.type === 'text') {
-      let text = nodeObj.text;
-      if (nodeObj.format & 1) text = <strong>{text}</strong>;
-      if (nodeObj.format & 2) text = <em>{text}</em>;
-      if (nodeObj.format & 8) text = <u>{text}</u>;
+
+    if (node.type === 'text') {
+      let text = node.text;
+      if (node.format & 1) text = <strong>{text}</strong>; // Bold
+      if (node.format & 2) text = <em>{text}</em>;       // Italic
+      if (node.format & 8) text = <u>{text}</u>;         // Underline
       return <span key={index}>{text}</span>;
     }
-    if (nodeObj.type === 'paragraph') {
-      return <p key={index}>{nodeObj.children?.map((c: unknown, i: number) => renderNode(c, i))}</p>;
-    }
-    if (nodeObj.type === 'heading') {
-      const allowed = new Set<keyof React.JSX.IntrinsicElements>([
-        'h1',
-        'h2',
-        'h3',
-        'h4',
-        'h5',
-        'h6',
-      ]);
-      const Tag = allowed.has(nodeObj.level as keyof React.JSX.IntrinsicElements) ? nodeObj.level as keyof React.JSX.IntrinsicElements : 'h2';
 
-      const id = `${headingIdPrefix}-${headingCounter}`;
-      headingCounter += 1;
-
+    if (node.type === 'link') {
       return (
-        <Tag key={index} id={id} className="font-bold my-4 text-xl">
-          {nodeObj.children?.map((c: unknown, i: number) => renderNode(c, i))}
+        <a key={index} href={node.url} className="text-blue-600 underline" target={node.target || "_blank"} rel="noopener noreferrer">
+          {node.children?.map((child: any, i: number) => renderNode(child, i))}
+        </a>
+      );
+    }
+
+    if (node.type === 'list') {
+      const Tag = (node.listType === 'number' ? 'ol' : 'ul') as 'ol' | 'ul';
+      const className = node.listType === 'number' ? 'list-decimal' : 'list-disc';
+      return (
+        <Tag key={index} className={`ml-5 ${className} my-4`}>
+          {node.children?.map((child: any, i: number) => renderNode(child, i))}
         </Tag>
       );
     }
-    return <div key={index}>{(nodeObj as any).children?.map((c: unknown, i: number) => renderNode(c, i))}</div>;
-  })(0);
 
-  return <div className="prose max-w-none text-left">{renderNode(validJson.root, 0)}</div>;
-};
+    if (node.type === 'listitem') {
+      return <li key={index}>{node.children?.map((child: any, i: number) => renderNode(child, i))}</li>;
+    }
 
-RichTextRenderer.displayName = 'RichTextRenderer';
+    if (node.type === 'heading') {
+      const Tag = (node.tag as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6') || 'h1';
+      const sizes: Record<string, string> = { h1: 'text-4xl', h2: 'text-3xl', h3: 'text-2xl', h4: 'text-xl' };
+      return (
+        <Tag key={index} className={`font-bold my-4 ${sizes[node.tag] || ''}`}>
+          {node.children?.map((child: any, i: number) => renderNode(child, i))}
+        </Tag>
+      );
+    }
 
-export { RichTextRenderer };
+    if (node.type === 'paragraph') {
+      return (
+        <p key={index} className="mb-4 leading-relaxed">
+          {node.children?.map((child: any, i: number) => renderNode(child, i))}
+        </p>
+      );
+    }
+
+    // Default: render children
+    return (
+      <div key={index}>
+        {node.children?.map((child: any, i: number) => renderNode(child, i))}
+      </div>
+    );
+  };
+
+  return <div className="prose max-w-none">{renderNode(validJson.root, 0)}</div>;
+}

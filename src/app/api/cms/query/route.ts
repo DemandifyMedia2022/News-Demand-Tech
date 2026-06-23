@@ -21,10 +21,11 @@ export async function GET(req: Request) {
     );
   }
 
-  const cmsUrl = new URL(`${baseUrl.replace(/\/+$/, "")}/query`);
+  const cmsUrl = new URL(`${baseUrl.replace(/\/+$/, "")}/api/cms/query`);
   cmsUrl.searchParams.set("type", type);
-  cmsUrl.searchParams.set("limit", "500");
-  cmsUrl.searchParams.set("offset", "0");
+  // Respect the limit/offset from query params or defaults
+  cmsUrl.searchParams.set("limit", limit);
+  cmsUrl.searchParams.set("offset", offset);
 
   let res: Response;
   try {
@@ -58,14 +59,22 @@ export async function GET(req: Request) {
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     return NextResponse.json(
-      { error: "CMS upstream error", status: res.status, body: text },
+      { error: "CMS upstream error", status: res.status, body: text, url: cmsUrl.toString() },
       { status: 502 }
     );
   }
 
-  const data: unknown = await res.json();
-  const dataObj = data as any;
-  const result = Array.isArray(dataObj?.result) ? dataObj.result : [];
+  const data: any = await res.json();
+  const rawResult = Array.isArray(data?.result) ? data.result : [];
+
+  // Prefix images and format result
+  const result = rawResult.map((doc: any) => {
+    if (doc.image && doc.image.startsWith("/")) {
+      doc.image = `${baseUrl.replace(/\/+$/, "")}${doc.image}`;
+    }
+    return doc;
+  });
+
 
   const stats = {
     upstreamTotal: result.length,
